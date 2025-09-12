@@ -128,14 +128,22 @@
         "ahrs_middleware.h": "c",
         "can_cmd_supcap.h": "c",
         "supcap.h": "c",
-        "bsp_servo_pwm.h": "c"
+        "bsp_servo_pwm.h": "c",
         "usb.h": "c",
         "robot_param_balanced_infantry_gimbal.h": "c"
     },
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
     "[cpp]": {
-        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.defaultFormatter": "xaver.clang-format",
         "editor.formatOnSave": true
     },
-    "C_Cpp.formatting": "default",
+    "[c]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.formatOnSave": true
+    },
+    "clang-format.language.c.enable": true,
+    "clang-format.language.cpp.enable": true,
+    "clang-format.executable": "C:\\workspace\\RoboMaster\\WHURM2026_sentry\\.clang-format", // 或者指定完整路径，例如 "C:\\Program Files\\LLVM\\bin\\clang-format.exe"
+    "clang-format.style": "file",
+    "clang-format.fallbackStyle": "Google",
 }
