@@ -1,5 +1,5 @@
 /**
-  ****************************(C) COPYRIGHT 2024 Polarbear****************************
+  ****************************(C) COPYRIGHT 2026 LuojiaFox****************************
   * @file       chassis_task.c/h
   * @brief      chassis control task,
   *             底盘控制任务
@@ -8,14 +8,14 @@
   *  Version    Date            Author          Modification
   *  V1.0.0     Apr-1-2024      Penguin         1. done
   *  V1.0.1     Apr-16-2024     Penguin         1. 完成基本框架
-  *  V1.0.2     Jun-13-2024     Penguin         1. 添加默认的任务控制时间类宏定义
-  *
+  *  V1.0.2     Sep-12-2025     Bayekq          1. 修改文件结构和冗余定义，完善注释
+  * 
   @verbatim
   ==============================================================================
 
   ==============================================================================
   @endverbatim
-  ****************************(C) COPYRIGHT 2024 Polarbear****************************
+  ****************************(C) COPYRIGHT 2026 LuojiaFox****************************
   */
 #include "chassis_task.h"
 
@@ -23,7 +23,7 @@
 #include "chassis_balance.h"
 #include "chassis_mecanum.h"
 #include "chassis_omni.h"
-#include "chassis_steering.h"
+// #include "chassis_steering.h"
 #include "cmsis_os.h"
 #include "usb_debug.h"
 
@@ -56,7 +56,7 @@ __weak void ChassisSendCmd(void);
 void chassis_task(void const * pvParameters)
 {
     ChassisPublish();
-    // 空闲一段时间
+    // 空闲一段时间 -> 357ms
     vTaskDelay(CHASSIS_TASK_INIT_TIME);
     // 初始化底盘
     ChassisInit();
@@ -143,7 +143,7 @@ __weak void ChassisSendCmd(void)
 __weak void ChassisSetCaliData(const fp32 motor_middle[4])
 {
     /* 
-     NOTE : 在其他文件中定义具体内容
+     NOTE : 在chassis_xxx中定义具体内容
     */
 }
 

@@ -1,19 +1,22 @@
 /**
-  ****************************(C) COPYRIGHT 2024 Polarbear****************************
+  ****************************(C) COPYRIGHT 2026 LuojiaFox ****************************
   * @file       chassis_omni.c/h
   * @brief      全向轮底盘控制器。
   * @note       包括初始化，目标量更新、状态量更新、控制量计算与直接控制量的发送
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0   2025.03.03      Harry_Wong        1.重新构建全向轮底盘代码，完成基础控制
-  *
+  *  V1.0.0   2025.03.03       Harry_Wong       1.重新构建全向轮底盘，完成单底盘控制
+  *  V1.0.1   2025.09.10       Bayekq           1.整合修改了一下电机控制代码
+  * 
   @verbatim
   ==============================================================================
 
   ==============================================================================
   @endverbatim
-  ****************************(C) COPYRIGHT 2024 Polarbear****************************
+  ****************************(C) COPYRIGHT 2026 LuojiaFox ****************************
 */
+
+
 #include "robot_param.h"
 #if (CHASSIS_TYPE == CHASSIS_OMNI_WHEEL)
 #ifndef CHASSIS_OMNI_H
@@ -32,6 +35,7 @@
 
 
 /*-------------------- Structural definition --------------------*/
+
 typedef enum {
     CHASSIS_LOCK,      //底盘锁定，所有轮子速度设定为0
     CHASSIS_SINGLE,    //只有底盘的模式

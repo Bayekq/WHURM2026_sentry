@@ -5,7 +5,9 @@
   * @note       包括初始化，目标量更新、状态量更新、控制量计算与直接控制量的发送
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0    2025.09.10       Bayekq          整合了一下电机控制代码改正处
+  *  V1.0.0   2025.03.03       Harry_Wong       1.重新构建全向轮底盘，完成单底盘控制
+  *  V1.0.1   2025.09.10       Bayekq           1.整合修改了一下电机控制代码
+  * 
   @verbatim
   ==============================================================================
 
@@ -71,11 +73,11 @@ void ChassisInit(void)
  */
 void ChassisSetMode(void)
 {
+//		这里后面出车了再加
 //    if ((toe_is_error(DBUS_TOE)) || switch_is_down(chassis.rc->rc.s[0]) || GetGimbalInitJudgeReturn() == false)
 //    {
 //        chassis.mode = CHASSIS_LOCK;
 //    }
-//		这里后面出车了再加
 //    else if (switch_is_mid(chassis.rc->rc.s[0]))
 //    {
 //        chassis.mode = CHASSIS_FOLLOW;
