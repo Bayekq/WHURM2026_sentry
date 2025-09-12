@@ -68,8 +68,6 @@
 static void detect_init(uint32_t time);
 
 
-
-
 error_t error_list[ERROR_LIST_LENGHT + 1];
 
 

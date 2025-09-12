@@ -1,9 +1,7 @@
 /**
   ****************************(C) COPYRIGHT 2019 DJI****************************
   * @file       detect_task.c/h
-  * @brief      detect error task, judged by receiving data time. provide detect
-                hook function, error exist function.
-  *             检测错误任务， 通过接收数据时间来判断.提供 检测钩子函数,错误存在函数.
+  * @brief      检测错误任务， 通过接收数据时间来判断.提供 检测钩子函数,错误存在函数.
   * @note       
   * @history
   *  Version    Date            Author          Modification
@@ -12,23 +10,6 @@
   *
   @verbatim
   ==============================================================================
-    add a sensor 
-    1. in detect_task.h, add the sensor name at the end of errorList,like
-    enum errorList
-    {
-        ...
-        XXX_TOE,    //new sensor
-        ERROR_LIST_LENGHT,
-    };
-    2.in detect_init function, add the offlineTime, onlinetime, priority params,like
-        uint16_t set_item[ERROR_LIST_LENGHT][3] =
-        {
-            ...
-            {n,n,n}, //XX_TOE
-        };
-    3. if XXX_TOE has data_is_error_fun ,solve_lost_fun,solve_data_error_fun function, 
-        please assign to function pointer.
-    4. when XXX_TOE sensor data come, add the function detect_hook(XXX_TOE) function.
     如果要添加一个新设备
     1.第一步在detect_task.h，添加设备名字在errorList的最后，像
     enum errorList
