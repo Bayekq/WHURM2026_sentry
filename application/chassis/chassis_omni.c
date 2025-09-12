@@ -1,19 +1,18 @@
 /**
-  ****************************(C) COPYRIGHT 2024 Polarbear****************************
+  ****************************(C) COPYRIGHT 2026 LuojiaFox ****************************
   * @file       chassis_omni.c/h
   * @brief      全向轮底盘控制器。
   * @note       包括初始化，目标量更新、状态量更新、控制量计算与直接控制量的发送
   * @history
   *  Version    Date            Author          Modification
-  *  V1.0.0   2025.03.03       Harry_Wong        1.重新构建全向轮底盘，完成单底盘控制
+  *  V1.0.0    2025.09.10       Bayekq          整合了一下电机控制代码改正处
   @verbatim
   ==============================================================================
 
   ==============================================================================
   @endverbatim
-  ****************************(C) COPYRIGHT 2024 Polarbear****************************
+  ****************************(C) COPYRIGHT 2026 LuojiaFox ****************************
 */
-
 
 #include "robot_param.h"
 #if (CHASSIS_TYPE == CHASSIS_OMNI_WHEEL)
@@ -58,8 +57,8 @@ void ChassisInit(void)
     MotorInit(&chassis.wheel[2],WHEEL_3_ID,WHEEL_3_CAN,WHEEL_3_MOTOR_TYPE,WHEEL_3_DIRECTION,WHEEL_3_RATIO,WHEEL_3_MODE);
     MotorInit(&chassis.wheel[3],WHEEL_4_ID,WHEEL_4_CAN,WHEEL_4_MOTOR_TYPE,WHEEL_4_DIRECTION,WHEEL_4_RATIO,WHEEL_4_MODE);
 
-    //step4 初始模式设置
-    chassis.mode = CHASSIS_LOCK;
+    //step4 初始模式设置 这里方便调底盘，后面应改为CHASSIS_LOCK
+    chassis.mode = CHASSIS_SINGLE;
 }
 
 
@@ -72,18 +71,19 @@ void ChassisInit(void)
  */
 void ChassisSetMode(void)
 {
-    if ((toe_is_error(DBUS_TOE)) || switch_is_down(chassis.rc->rc.s[0]) || GetGimbalInitJudgeReturn() == false)
-    {
-        chassis.mode = CHASSIS_LOCK;
-    }
-    else if (switch_is_mid(chassis.rc->rc.s[0]))
-    {
-        chassis.mode = CHASSIS_FOLLOW;
-    }
-    else if (switch_is_up(chassis.rc->rc.s[0]))
-    {
-        chassis.mode = CHASSIS_FOLLOW;
-    }
+//    if ((toe_is_error(DBUS_TOE)) || switch_is_down(chassis.rc->rc.s[0]) || GetGimbalInitJudgeReturn() == false)
+//    {
+//        chassis.mode = CHASSIS_LOCK;
+//    }
+//		这里后面出车了再加
+//    else if (switch_is_mid(chassis.rc->rc.s[0]))
+//    {
+//        chassis.mode = CHASSIS_FOLLOW;
+//    }
+//    else if (switch_is_up(chassis.rc->rc.s[0]))
+//    {
+//        chassis.mode = CHASSIS_FOLLOW;
+//    }
 }
 
 

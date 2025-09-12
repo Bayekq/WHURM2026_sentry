@@ -1,3 +1,14 @@
+/**
+ * @file chassis_balance_extras.c
+ * @author Bayekq (206858817@qq.com)
+ * @brief 底盘平衡相关的额外函数
+ * @version 0.1
+ * @date 2025-09-10
+ * 
+ * @copyright Copyright (c) 2026
+ * 
+ */
+
 #include "chassis_balance_extras.h"
 
 #if (CHASSIS_TYPE == CHASSIS_BALANCE)

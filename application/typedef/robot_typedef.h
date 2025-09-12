@@ -69,7 +69,7 @@
 #define C_BOARD_ENGINEER_GIMBAL          6  // 工程云台C板
 #define C_BOARD_OMNI_INFANTRY            7  // (单板)全向轮步兵C板
 #define C_BOARD_MECANUM_HERO             8  // (单板)麦克纳姆轮英雄C板
-#define C_BOARD_OMNI_SENTINEIL           9  // (单板)全向轮哨兵C板
+#define C_BOARD_OMNI_SENTRY              9  // (单板)全向轮哨兵C板
 
 // 控制链路相关
 #define CL_RC_NONE           0x100  // 无遥控器链路

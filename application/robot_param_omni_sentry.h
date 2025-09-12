@@ -10,7 +10,7 @@
 #define CHASSIS_TYPE CHASSIS_OMNI_WHEEL          // 选择底盘类型
 #define GIMBAL_TYPE GIMBAL_NONE                  // 选择云台类型(无云台，底盘调试阶段)
 #define SHOOT_TYPE SHOOT_NONE                    // 选择发射机构类型(无发射机构，底盘调试阶段)
-#define CONTROL_TYPE CHASSIS_AND_GIMBAL          // 选择控制类型
+#define CONTROL_TYPE CHASSIS_ONLY			           // 选择控制类型
 #define MECHANICAL_ARM_TYPE MECHANICAL_ARM_NONE  // 选择机械臂类型
 
 #define __GYRO_BIAS_YAW (0.0f)                   // (rad/s)陀螺仪零漂(调试阶段，暂未设置)
