@@ -13,12 +13,12 @@
 #define CONTROL_TYPE CHASSIS_ONLY			           // 选择控制类型
 #define MECHANICAL_ARM_TYPE MECHANICAL_ARM_NONE  // 选择机械臂类型
 
-#define __GYRO_BIAS_YAW (0.0f)                   // (rad/s)陀螺仪零漂(调试阶段，暂未设置)
+#define __GYRO_BIAS_YAW  0.000000000f            // 陀螺仪零飘，单位rad/s(调试阶段，暂未设置)
 
 /*-------------------- Chassis --------------------*/
 //physical parameters ---------------------
 #define WHEEL_RADIUS (0.141f)            //(m)轮子直径
-#define WHEEL_CENTER_DISTANCE (0.216f)   //(m)轮子到车的距离（0.22 + 0.21）
+#define WHEEL_CENTER_DISTANCE (0.216f)   //(m)轮子到车的距离
 
 //motor parameters ---------------------
 //底盘电流发送参数
