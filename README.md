@@ -1,23 +1,10 @@
 # WHURM2026_sentry
 
-<!-- <div align=center>
+<div align=center>
 
-![Logo](./doc/pic/Logo6.png)
+<!-- ![Logo](./doc/pic/Logo6.png) -->
 
-[![Author](https://img.shields.io/badge/Author-小企鹅-orange.svg)](https://gitee.com/Ljw0401)
-[![Maintainer](https://img.shields.io/badge/Maintainer-YZX-orange.svg)](https://gitee.com/yuan-zaixiu)
-[![Collaborator](https://img.shields.io/badge/Collaborator-WHR-orange.svg)](https://gitee.com/Harry_Wong)
-[![Collaborator](https://img.shields.io/badge/Collaborator-furrry-orange.svg)](https://gitee.com/furrry)
-
-![language](https://img.shields.io/badge/language-C-blue.svg)
-![license](https://img.shields.io/badge/license-MIT-green.svg)
-
-[![commit](https://svg.hamm.cn/gitee.svg?user=SMBU-POLARBEAR&project=StandardRobotpp&type=commit)](https://gitee.com/SMBU-POLARBEAR/StandardRobotpp)
-[![fork](https://gitee.com/SMBU-POLARBEAR/StandardRobotpp/badge/fork.svg?theme=dark)](https://gitee.com/SMBU-POLARBEAR/StandardRobotpp)
-[![star](https://gitee.com/SMBU-POLARBEAR/StandardRobotpp/badge/star.svg?theme=dark)](https://gitee.com/SMBU-POLARBEAR/StandardRobotpp)
-[![release](https://svg.hamm.cn/gitee.svg?user=SMBU-POLARBEAR&project=StandardRobotpp&type=release)](https://gitee.com/SMBU-POLARBEAR/StandardRobotpp)
-
-</div> -->
+</div>
 
 ## 简介
 
