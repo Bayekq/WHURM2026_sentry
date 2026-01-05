@@ -220,7 +220,7 @@ void GimbalInit(void)
 
    //step3 SMC数据清零，设置SMC参数
    SMC_init(&gimbal_smc.yaw, (fp32[]){J_GIMBAL_YAW, K_GIMBAL_YAW, C_GIMBAL_YAW, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, epsilon_GIMBAL_YAW}, EXPONENT, SAT_LIMIT_GIMBAL_YAW, U_MAX_GIMBAL_YAW, POS_ESP_GIMBAL_YAW);
-   SMC_init(&gimbal_smc.pitch, (fp32[]){J_GIMBAL_PITCH, K_GIMBAL_PITCH, 0.0f, C1_GIMBAL_PITCH, C2_GIMBAL_PITCH, 0.0f, 0.0f, 0.0f, epsilon_GIMBAL_PITCH}, EXPONENT, SAT_LIMIT_GIMBAL_PITCH, U_MAX_GIMBAL_PITCH, POS_ESP_GIMBAL_PITCH);
+   SMC_init(&gimbal_smc.pitch, (fp32[]){J_GIMBAL_PITCH, K_GIMBAL_PITCH, 0.0f, C1_GIMBAL_PITCH, C2_GIMBAL_PITCH, 0.0f, 0.0f, 0.0f, epsilon_GIMBAL_PITCH}, EISMC, SAT_LIMIT_GIMBAL_PITCH, U_MAX_GIMBAL_PITCH, POS_ESP_GIMBAL_PITCH);
    
    //step4 初始化电机
    MotorInit(&gimbal.yaw,GIMBAL_YAW_ID,GIMBAL_YAW_CAN,GIMBAL_YAW_MOTOR_TYPE,GIMBAL_YAW_DIRECTION,GIMBAL_YAW_REDUCTION_RATIO,GIMBAL_YAW_MODE);
@@ -428,10 +428,10 @@ void GimbalReference(void)
       switch (gimbal.offset_status)
       {
       case 1:
-        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw-0.01f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
+        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw-0.001f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
         break;
       case 2:
-        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw+0.01f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
+        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw+0.001f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
         break;
       default:
         break;

@@ -32,7 +32,9 @@
 
 
 // 选择机器人的各种类型
+#ifndef __RC_TYPE
 #define __RC_TYPE RC_ET08A  // 遥控器类型
+#endif
 
 // 模式选择用于选择不同的FreeRTOS进程 (1-On 0-Off)
 #define __DEVELOP 0                   // 开发模式 测试新功能使用，需要自行编写./application/assist/develop_task.c

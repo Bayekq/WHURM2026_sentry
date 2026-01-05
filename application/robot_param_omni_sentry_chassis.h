@@ -16,8 +16,8 @@
 #define __GYRO_BIAS_YAW  0.000000000f               // 陀螺仪零飘，单位rad/s(调试阶段，暂未设置)
 
 #define __BOARD_INSTALL_SPIN_MATRIX \
-    {0.0f,  0.0f, -1.0f}, \
-    {-1.0f,  0.0f,  0.0f}, \
+    {1.0f,  0.0f, 0.0f}, \
+    {0.0f,  0.0f,  -1.0f}, \
     {0.0f, 1.0f,  0.0f}
 
 #define __CONTROL_LINK_RC  CL_RC_DIRECT  // 控制链路选择：RC遥控器
@@ -81,7 +81,7 @@
 #define MAX_OUT_OMNI_VEL (30000.0f)
 
 //SMC parameters ---------------------
-#define CHASSIS_SAMPLE_TIME (0.002f) // 云台采样周期(s)
+#define CHASSIS_SAMPLE_TIME (0.001f) // 云台采样周期(s)
 
 //云台跟随角度环SMC参数
 #define J_CHASSIS_FOLLOW (0.05f)
@@ -144,7 +144,7 @@
 #define GIMBAL_LOWER_LIMIT_AIM_YAW (-1.5f)
 
 //电机角度中值设置
-#define GIMBAL_BIG_YAW_MID (1.52247596f)    // 云台初始化正对齐的时候使用的big_yaw轴正中心量
+#define GIMBAL_BIG_YAW_MID (-1.59917498f)    // 云台初始化正对齐的时候使用的big_yaw轴正中心量
 
 //扫描模式步长
 #define GIMBAL_SCAN_STEP (0.0005f) // 云台扫描步进量(rad)
@@ -154,9 +154,9 @@
 
 //BIG YAW
 #define J_GIMBAL_BIG_YAW (15.0f)
-#define K_GIMBAL_BIG_YAW (700.0f)
-#define C_GIMBAL_BIG_YAW (6.0f)
-#define epsilon_GIMBAL_BIG_YAW (0.5f)
+#define K_GIMBAL_BIG_YAW (1500.0f)
+#define C_GIMBAL_BIG_YAW (7.0f)
+#define epsilon_GIMBAL_BIG_YAW (0.001f)
 #define SAT_LIMIT_GIMBAL_BIG_YAW (1)
 #define POS_ESP_GIMBAL_BIG_YAW (0.001f)
 #define U_MAX_GIMBAL_BIG_YAW (25000)

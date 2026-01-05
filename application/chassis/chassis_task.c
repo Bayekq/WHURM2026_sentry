@@ -20,7 +20,6 @@
 #include "chassis_task.h"
 
 #include "attribute_typedef.h"
-#include "chassis_balance.h"
 #include "chassis_mecanum.h"
 #include "chassis_omni.h"
 // #include "chassis_steering.h"
@@ -32,7 +31,7 @@
 #endif  // CHASSIS_TASK_INIT_TIME
 
 #ifndef CHASSIS_CONTROL_TIME_MS
-#define CHASSIS_CONTROL_TIME_MS 2
+#define CHASSIS_CONTROL_TIME_MS 1
 #endif  // CHASSIS_CONTROL_TIME_MS
 
 #if INCLUDE_uxTaskGetStackHighWaterMark

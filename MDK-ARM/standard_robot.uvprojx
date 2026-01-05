@@ -3367,16 +3367,6 @@
               <FilePath>..\application\chassis\chassis_task.c</FilePath>
             </File>
             <File>
-              <FileName>chassis_balance.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\chassis\chassis_balance.c</FilePath>
-            </File>
-            <File>
-              <FileName>chassis_balance_extras.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\chassis\chassis_balance_extras.c</FilePath>
-            </File>
-            <File>
               <FileName>chassis_mecanum.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\chassis\chassis_mecanum.c</FilePath>
@@ -3530,11 +3520,6 @@
               <FileName>music_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\application\music\music_task.c</FilePath>
-            </File>
-            <File>
-              <FileName>music.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\application\music\music.c</FilePath>
             </File>
             <File>
               <FileName>music_you.c</FileName>

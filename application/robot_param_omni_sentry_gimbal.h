@@ -16,8 +16,14 @@
 #define __SELF_BOARD_ID C_BOARD_OMNI_SENTRY_AIM_GIMBAL   // 本板ID
 #define __GYRO_BIAS_YAW  0.000000000f            // 陀螺仪零飘，单位rad/s(调试阶段，暂未设置)
 
-#define __CONTROL_LINK_RC  CL_RC_UART2   // 控制链路选择：RC遥控器
+#define __RC_TYPE RC_DT7  // 遥控器类型
+// #define __CONTROL_LINK_RC  CL_RC_UART2   // 控制链路选择：RC遥控器
 #define __CONTROL_LINK_KM  CL_KM_RC      // 控制链路选择：键鼠数据
+
+#define __BOARD_INSTALL_SPIN_MATRIX \
+    {0.0f, 1.0f, 0.0f}, \
+    {-1.0f, 0.0f, 0.0f}, \
+    {0.0f, 0.0f, 1.0f}
 
 /*******************************************************************************/
 /* Gimbal                                                                      */
@@ -63,15 +69,15 @@
 #define GIMBAL_PITCH_MODE (0)
 
 //physical parameters ---------------------
-#define GIMBAL_UPPER_LIMIT_PITCH (0.5f)
-#define GIMBAL_LOWER_LIMIT_PITCH (-0.7f)
+#define GIMBAL_UPPER_LIMIT_PITCH (0.3f)
+#define GIMBAL_LOWER_LIMIT_PITCH (-0.4f)
 
 #define GIMBAL_UPPER_LIMIT_YAW (1.5f)
-#define GIMBAL_LOWER_LIMIT_YAW (-1.5f)
+#define GIMBAL_LOWER_LIMIT_YAW (-0.8f)
 
 //电机角度中值设置
-#define GIMBAL_PITCH_MID (1.70808768f)  //云台初始化正对齐的时候使用的pitch轴正中心量
-#define GIMBAL_YAW_MID (-1.18500018f)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_PITCH_MID (-2.38917518f)  //云台初始化正对齐的时候使用的pitch轴正中心量
+#define GIMBAL_YAW_MID (-1.34683514f)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 //扫描模式步长&正弦信号参数
 #define GIMBAL_SCAN_STEP (0.0010f)
@@ -86,23 +92,23 @@
 #define GIMBAL_SAMPLE_TIME (0.001f) // 云台采样周期(s)
 
 //AIM YAW
-#define J_GIMBAL_YAW (3.0f)
-#define K_GIMBAL_YAW (200.0f)
-#define C_GIMBAL_YAW (30.0f)
-#define epsilon_GIMBAL_YAW (0.5f)
+#define J_GIMBAL_YAW (10.0f)
+#define K_GIMBAL_YAW (600.0f)
+#define C_GIMBAL_YAW (15.0f)
+#define epsilon_GIMBAL_YAW (0.001f)
 #define SAT_LIMIT_GIMBAL_YAW (1)
 #define POS_ESP_GIMBAL_YAW (0.001f)
 #define U_MAX_GIMBAL_YAW (15000)
 
 //PITCH轴SMC参数
-#define J_GIMBAL_PITCH (4.0f)
-#define K_GIMBAL_PITCH (200.0f)
+#define J_GIMBAL_PITCH (3.5f)
+#define K_GIMBAL_PITCH (500.0f)
 #define C1_GIMBAL_PITCH (30.0f)
-#define C2_GIMBAL_PITCH (30.0f)
-#define epsilon_GIMBAL_PITCH (0.1f)
+#define C2_GIMBAL_PITCH (0.5f)
+#define epsilon_GIMBAL_PITCH (0.001f)
 #define SAT_LIMIT_GIMBAL_PITCH (1)
 #define POS_ESP_GIMBAL_PITCH (0.001f)
-#define U_MAX_GIMBAL_PITCH (10000)
+#define U_MAX_GIMBAL_PITCH (15000)
 
 //LPF parameters ---------------------
 #define GIMBAL_YAW_LPF_ALPHA           (0.1f)
@@ -112,10 +118,10 @@
 /* Shoot                                                                       */
 /*******************************************************************************/
 //physical parameters ---------------------
-#define FRIC_RADIUS 0.03f             // (m)摩擦轮半径
+#define FRIC_RADIUS 0.029f             // (m)摩擦轮半径
 #define BULLET_NUM 8                  // 定义拨弹盘容纳弹丸个数
 #define GUN_NUM 1                     // 定义枪管个数（一个枪管2个摩擦轮）
-#define TRIGGER_REDUCTION_RATIO 0.5f  // 定义电机到拨弹盘的齿轮减速比
+#define TRIGGER_REDUCTION_RATIO 0.5f  // 定义电机到拨弹盘的齿轮减速比 15/30
 
 /*MOTOR paramters --------------------*/
 
@@ -129,9 +135,9 @@
 #define FRIC_MOTOR_L_DIRECTION (-1)
 
 //电机ID
-#define TRIGGER_MOTOR_ID 8
-#define FRIC_MOTOR_R_ID 6
-#define FRIC_MOTOR_L_ID 5
+#define TRIGGER_MOTOR_ID 1
+#define FRIC_MOTOR_R_ID 2
+#define FRIC_MOTOR_L_ID 3
 
 //电机can口
 #define TRIGGER_MOTOR_CAN 2
@@ -139,14 +145,14 @@
 #define FRIC_MOTOR_L_CAN 2
 
 //电机std_id
-#define STD_ID 0x1FF
+#define STD_ID 0X200
 //单环拨弹速度
-#define TRIGGER_SPEED (300.0f)
+#define TRIGGER_SPEED (-285.0f)
 //摩擦轮速度
-#define FRIC_R_SPEED (450.0f)
-#define FRIC_L_SPEED (-450.0f)
-#define FRIC_SPEED_LIMIT (400.0f)
-#define FRIC_SPEED_ERROR_THRESHOLD (5.0f)
+#define FRIC_R_SPEED (-900.0f)
+#define FRIC_L_SPEED (900.0f)
+#define FRIC_SPEED_LIMIT (840.0f)
+#define FRIC_SPEED_ERROR_THRESHOLD (20.0f)
 
 /*ECD parameters------------*/
 //电机反馈码盘值范围
@@ -164,7 +170,7 @@
 #define BLOCK_TRIGGER_SPEED 5.0f
 #define BLOCK_TIME 1000
 #define REVERSE_TIME 1250
-#define REVERSE_SPEED (-20.0f)
+#define REVERSE_SPEED (20.0f)
 
 /*SENTRY parameters ---------------------*/
 // 目标丢失次数阈值，超过该值则认为目标丢失，关闭摩擦轮（通过记录开火控制关闭时间来判断，与云台控制解耦）
@@ -193,12 +199,12 @@
 #define TRIGGER_ANGEL_PID_MAX_IOUT (30.0f)
 
 //摩擦轮电机PID
-#define FRIC_SPEED_PID_KP (666.0f)
-#define FIRC_SPEED_PID_KI (0.6f)
-#define FRIC_SPEED_PID_KD (1.0f)
+#define FRIC_SPEED_PID_KP (30.0f)
+#define FIRC_SPEED_PID_KI (5.0f)
+#define FRIC_SPEED_PID_KD (10.0f)
 
-#define FRIC_PID_MAX_OUT (16000.0f)
-#define FRIC_PID_MAX_IOUT (1000.0f)
+#define FRIC_PID_MAX_OUT (10000.0f)
+#define FRIC_PID_MAX_IOUT (30000.0f)
 
 #define SHOOT_HEAT_REMAIN_VALUE 80  //89
 
