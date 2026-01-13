@@ -14,10 +14,10 @@
 
 // clang-format off
 #define __SELF_BOARD_ID C_BOARD_OMNI_SENTRY_AIM_GIMBAL   // 本板ID
-#define __GYRO_BIAS_YAW  0.000000000f            // 陀螺仪零飘，单位rad/s(调试阶段，暂未设置)
+#define __GYRO_BIAS_YAW  -0.00157599951525665884f            // 陀螺仪零飘，单位rad/s(调试阶段，暂未设置)
 
-#define __RC_TYPE RC_DT7  // 遥控器类型
-// #define __CONTROL_LINK_RC  CL_RC_UART2   // 控制链路选择：RC遥控器
+#define __RC_TYPE RC_ET08A  // 遥控器类型
+#define __CONTROL_LINK_RC  CL_RC_UART2   // 控制链路选择：RC遥控器
 #define __CONTROL_LINK_KM  CL_KM_RC      // 控制链路选择：键鼠数据
 
 #define __BOARD_INSTALL_SPIN_MATRIX \
@@ -69,21 +69,21 @@
 #define GIMBAL_PITCH_MODE (0)
 
 //physical parameters ---------------------
-#define GIMBAL_UPPER_LIMIT_PITCH (0.3f)
-#define GIMBAL_LOWER_LIMIT_PITCH (-0.4f)
+#define GIMBAL_UPPER_LIMIT_PITCH (0.17f)
+#define GIMBAL_LOWER_LIMIT_PITCH (-0.42f)
 
 #define GIMBAL_UPPER_LIMIT_YAW (1.5f)
-#define GIMBAL_LOWER_LIMIT_YAW (-0.8f)
+#define GIMBAL_LOWER_LIMIT_YAW (-1.15f)
 
 //电机角度中值设置
 #define GIMBAL_PITCH_MID (-2.38917518f)  //云台初始化正对齐的时候使用的pitch轴正中心量
 #define GIMBAL_YAW_MID (-1.34683514f)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 //扫描模式步长&正弦信号参数
-#define GIMBAL_SCAN_STEP (0.0010f)
-#define GIMBAL_SCAN_PITCH_PERIOD (2.0f)  //s
-#define GIMBAL_SCAN_PITCH_AMPLITUDE (0.2f)
-#define GIMBAL_SCAN_PITCH_OFFSET (0.1f)
+#define GIMBAL_SCAN_STEP (0.0015f)
+#define GIMBAL_SCAN_PITCH_PERIOD (1.25f)  //s
+#define GIMBAL_SCAN_PITCH_AMPLITUDE (0.25f)
+#define GIMBAL_SCAN_PITCH_OFFSET (-0.14f)
 
 //自瞄丢失模式切换时间阈值
 #define GIMBAL_AIMLOST_TIME (uint16_t)1000  //ms
@@ -97,17 +97,17 @@
 #define C_GIMBAL_YAW (15.0f)
 #define epsilon_GIMBAL_YAW (0.001f)
 #define SAT_LIMIT_GIMBAL_YAW (1)
-#define POS_ESP_GIMBAL_YAW (0.001f)
+#define POS_ESP_GIMBAL_YAW (0.0001f)
 #define U_MAX_GIMBAL_YAW (15000)
 
 //PITCH轴SMC参数
-#define J_GIMBAL_PITCH (3.5f)
+#define J_GIMBAL_PITCH (5.0f)
 #define K_GIMBAL_PITCH (500.0f)
-#define C1_GIMBAL_PITCH (30.0f)
-#define C2_GIMBAL_PITCH (0.5f)
+#define C1_GIMBAL_PITCH (50.0f)
+#define C2_GIMBAL_PITCH (0.01f)
 #define epsilon_GIMBAL_PITCH (0.001f)
 #define SAT_LIMIT_GIMBAL_PITCH (1)
-#define POS_ESP_GIMBAL_PITCH (0.001f)
+#define POS_ESP_GIMBAL_PITCH (0.0001f)
 #define U_MAX_GIMBAL_PITCH (15000)
 
 //LPF parameters ---------------------
@@ -149,9 +149,9 @@
 //单环拨弹速度
 #define TRIGGER_SPEED (-285.0f)
 //摩擦轮速度
-#define FRIC_R_SPEED (-900.0f)
-#define FRIC_L_SPEED (900.0f)
-#define FRIC_SPEED_LIMIT (840.0f)
+#define FRIC_R_SPEED (-800.0f)
+#define FRIC_L_SPEED (800.0f)
+#define FRIC_SPEED_LIMIT (700.0f)
 #define FRIC_SPEED_ERROR_THRESHOLD (20.0f)
 
 /*ECD parameters------------*/
@@ -174,7 +174,7 @@
 
 /*SENTRY parameters ---------------------*/
 // 目标丢失次数阈值，超过该值则认为目标丢失，关闭摩擦轮（通过记录开火控制关闭时间来判断，与云台控制解耦）
-#define AIM_LOST_TIME_THRESHOLD 2000  // ms
+#define AIM_LOST_TIME_THRESHOLD 1000  // ms
 
 /*MIT parameters ---------------------*/
 
@@ -199,9 +199,9 @@
 #define TRIGGER_ANGEL_PID_MAX_IOUT (30.0f)
 
 //摩擦轮电机PID
-#define FRIC_SPEED_PID_KP (30.0f)
-#define FIRC_SPEED_PID_KI (5.0f)
-#define FRIC_SPEED_PID_KD (10.0f)
+#define FRIC_SPEED_PID_KP (250.0f)
+#define FIRC_SPEED_PID_KI (15.0f)
+#define FRIC_SPEED_PID_KD (0.05f)
 
 #define FRIC_PID_MAX_OUT (10000.0f)
 #define FRIC_PID_MAX_IOUT (30000.0f)

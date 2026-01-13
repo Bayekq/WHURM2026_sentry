@@ -30,6 +30,7 @@
 #include "signal_generator.h"
 #include "uart2_typedef.h"
 #include "usb_debug.h"
+#include "supervisory_computer_cmd.h"
 
 /*******************************************************************************/
 /* Macro Definitions                                                           */
@@ -201,6 +202,9 @@ void DataAimyawRenew()
     Send_Data_Aimyaw.data.yaw_motor_offset = GetGimbalDeltaYawMid();
     Send_Data_Aimyaw.data.yaw_motor_offline = true;
     Send_Data_Aimyaw.data.init_judge = GetGimbalInitJudgeReturn();
+    Send_Data_Aimyaw.data.speed_vector.vx = GetScCmdChassisSpeed(AX_X);
+    Send_Data_Aimyaw.data.speed_vector.vy = GetScCmdChassisSpeed(AX_Y);
+    Send_Data_Aimyaw.data.speed_vector.wz = GetScCmdChassisSpeed(AX_Z);
     append_CRC16_check_sum((uint8_t *)(&Send_Data_Aimyaw), sizeof(Data_Aimyaw_s));
 }
 
@@ -407,6 +411,26 @@ bool GetUartAutoAimJudgeReturn(void)
     }
     return Receive_Data_Aimyaw.data.auto_aim_judge;
 }
+
+#if __SELF_BOARD_ID == C_BOARD_OMNI_SENTRY_ROT_GIMBAL
+inline float GetScCmdChassisSpeed(uint8_t axis)
+{
+    if (axis == AX_X)
+    {
+        return Receive_Data_Aimyaw.data.speed_vector.vx;
+    } 
+    else if (axis == AX_Y) 
+    {
+        return Receive_Data_Aimyaw.data.speed_vector.vy;
+    }
+    // 角速度置零
+    else if (axis == AX_Z)
+    {
+        return Receive_Data_Aimyaw.data.speed_vector.wz;
+    }
+    return 0.0f;
+}
+#endif
 
 uint32_t GetUartTimeStampForTest(void) { return Receive_Data_Test.time_stamp; }
 

@@ -266,9 +266,13 @@ void ShootObserver(void)
   SHOOT.last_fric_vel = SHOOT.fric_motor[1].fdb.vel;
   
   // 目标丢失计数
-  if (switch_is_up(SHOOT.rc->rc.s[SHOOT_MODE_CHANNEL]) && !GetScCmdFire())
+  if (switch_is_mid(SHOOT.rc->rc.s[SHOOT_MODE_CHANNEL]) && !GetScCmdFire())
   {
     SHOOT.aim_lost_time++;
+    if (SHOOT.aim_lost_time > AIM_LOST_TIME_THRESHOLD)
+    {
+      SHOOT.aim_lost_time = AIM_LOST_TIME_THRESHOLD;
+    }
   }
   else
   {

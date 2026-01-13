@@ -102,7 +102,7 @@ void ChassisSetMode(void)
    }
    else if (switch_is_up(chassis.rc->rc.s[CHASSIS_MODE_CHANNEL]))
    {
-       chassis.mode = CHASSIS_IMU;
+       chassis.mode = CHASSIS_IMU; // 哨兵上为全自动模式
    }
 #endif
 }
@@ -153,8 +153,8 @@ void ChassisReference(void)
     }
     else if (chassis.mode == CHASSIS_FOLLOW)
     {
-        chassis.reference_rc.vx=fp32_deadline(chassis.rc->rc.ch[CHASSIS_X_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_X);
-        chassis.reference_rc.vy=fp32_deadline(-chassis.rc->rc.ch[CHASSIS_Y_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_Y);
+        chassis.reference_rc.vx=CALIBRATION_K*fp32_deadline(chassis.rc->rc.ch[CHASSIS_X_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_X);
+        chassis.reference_rc.vy=CALIBRATION_K*fp32_deadline(-chassis.rc->rc.ch[CHASSIS_Y_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_Y);
 
         if (chassis.rc->key.v & KEY_PRESSED_OFFSET_W) 
         {
@@ -185,8 +185,8 @@ void ChassisReference(void)
     }
     else if (chassis.mode == CHASSIS_IMU)
     {
-        chassis.reference_rc.vx=fp32_deadline(chassis.rc->rc.ch[CHASSIS_X_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_X);
-        chassis.reference_rc.vy=fp32_deadline(-chassis.rc->rc.ch[CHASSIS_Y_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_Y);
+        chassis.reference_rc.vx=CALIBRATION_K*fp32_deadline(chassis.rc->rc.ch[CHASSIS_X_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_X);
+        chassis.reference_rc.vy=CALIBRATION_K*fp32_deadline(-chassis.rc->rc.ch[CHASSIS_Y_CHANNEL],-CHASSIS_RC_DEADLINE,CHASSIS_RC_DEADLINE)/CHASSIS_RC_MAX_RANGE*CHASSIS_RC_MAX_SPEED + GetScCmdChassisSpeed(AX_Y);
 
         if (chassis.rc->key.v & KEY_PRESSED_OFFSET_W) 
         {
@@ -211,7 +211,7 @@ void ChassisReference(void)
         chassis.reference.vx =  chassis.reference_rc.vx * cosf(chassis.yaw_delta) - chassis.reference_rc.vy * sinf(chassis.yaw_delta);
         chassis.reference.vy =  chassis.reference_rc.vx * sinf(chassis.yaw_delta) + chassis.reference_rc.vy * cosf(chassis.yaw_delta);
         
-        chassis.reference.wz =  6.0f;
+        chassis.reference.wz =  GetScCmdChassisSpeed(AX_Z);
     }
 }
 

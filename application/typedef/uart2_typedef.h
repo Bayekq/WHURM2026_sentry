@@ -22,6 +22,7 @@
 #include "remote_control.h"
 #include "struct_typedef.h"
 
+
 // clang-format off
 // UART2通信协议相关定义
 #define UART2_COMMUNICATE_SOF      ((uint8_t)0xA5) // 数据帧起始字节，固定值为 0xA5
@@ -133,6 +134,12 @@ typedef struct
         bool init_judge;
         bool auto_aim_judge;
         bool rc_offline;
+        struct
+        {
+            float vx;
+            float vy;
+            float wz;
+        } __packed__ speed_vector;
     } __attribute__((packed)) data;
 
     uint16_t crc16;  //crc16校验

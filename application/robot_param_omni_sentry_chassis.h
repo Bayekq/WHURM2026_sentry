@@ -27,8 +27,10 @@
 
 /*-------------------- Chassis --------------------*/
 //physical parameters ---------------------
-#define WHEEL_RADIUS (0.141f)            //(m)轮子直径
-#define WHEEL_CENTER_DISTANCE (0.216f)   //(m)轮子到车的距离
+#define CALIBRATION_K 2.05312502053125f                 //(none)底盘速度校准系数
+
+#define WHEEL_RADIUS (0.152f)            //(m)轮子半径
+#define WHEEL_CENTER_DISTANCE (0.22742f)   //(m)轮子到车的距离
 
 //motor parameters ---------------------
 //底盘电流发送参数
@@ -74,9 +76,9 @@
 
 //PID parameters ---------------------
 //驱动轮速度环PID参数
-#define KP_OMNI_VEL (20.0f)
-#define KI_OMNI_VEL (0.3f)
-#define KD_OMNI_VEL (0.3f)
+#define KP_OMNI_VEL (250.0f)
+#define KI_OMNI_VEL (15.0f)
+#define KD_OMNI_VEL (0.05f)
 #define MAX_IOUT_OMNI_VEL (10000.0f)
 #define MAX_OUT_OMNI_VEL (30000.0f)
 
@@ -84,13 +86,13 @@
 #define CHASSIS_SAMPLE_TIME (0.001f) // 云台采样周期(s)
 
 //云台跟随角度环SMC参数
-#define J_CHASSIS_FOLLOW (0.05f)
-#define K_CHASSIS_FOLLOW (30.0f)
+#define J_CHASSIS_FOLLOW (0.065f)
+#define K_CHASSIS_FOLLOW (55.0f)
 #define C_CHASSIS_FOLLOW (8.0f)
 #define epsilon_CHASSIS_FOLLOW (0.5f)
 #define SAT_LIMIT_CHASSIS_FOLLOW (1)
-#define POS_ESP_CHASSIS_FOLLOW (0.1f)
-#define U_MAX_CHASSIS_FOLLOW (10)
+#define POS_ESP_CHASSIS_FOLLOW (0.001f)
+#define U_MAX_CHASSIS_FOLLOW (300)
 
 //RC parametes ---------------------
 //遥控器相关参数
@@ -100,7 +102,7 @@
 #define CHASSIS_RC_MAX_VELOCITY (8.0f)  //最大角速度(rad/s) 仅用于无云台模式
 
 // 底盘的遥控器相关宏定义 ---------------------
-#define CHASSIS_MODE_CHANNEL   DT7_SW_LEFT    // 选择底盘状态 开关通道号
+#define CHASSIS_MODE_CHANNEL   DT7_SW_RIGHT   // 选择底盘状态 开关通道号
 #define CHASSIS_X_CHANNEL      DT7_CH_RV      // 前后的遥控器通道号码
 #define CHASSIS_Y_CHANNEL      DT7_CH_RH      // 左右的遥控器通道号码
 #define CHASSIS_WZ_CHANNEL     DT7_CH_ROLLER  // 旋转的遥控器通道号码
@@ -144,21 +146,21 @@
 #define GIMBAL_LOWER_LIMIT_AIM_YAW (-1.5f)
 
 //电机角度中值设置
-#define GIMBAL_BIG_YAW_MID (-1.59917498f)    // 云台初始化正对齐的时候使用的big_yaw轴正中心量
+#define GIMBAL_BIG_YAW_MID (1.53934979f)    // 云台初始化正对齐的时候使用的big_yaw轴正中心量
 
 //扫描模式步长
-#define GIMBAL_SCAN_STEP (0.0005f) // 云台扫描步进量(rad)
+#define GIMBAL_SCAN_STEP (0.00075f) // 云台扫描步进量(rad)
 
 //SMC parameters ---------------------
 #define GIMBAL_SAMPLE_TIME (0.001f) // 云台采样周期(s)
 
 //BIG YAW
-#define J_GIMBAL_BIG_YAW (15.0f)
-#define K_GIMBAL_BIG_YAW (1500.0f)
-#define C_GIMBAL_BIG_YAW (7.0f)
+#define J_GIMBAL_BIG_YAW (35.0f)
+#define K_GIMBAL_BIG_YAW (2500.0f)
+#define C_GIMBAL_BIG_YAW (6.0f)
 #define epsilon_GIMBAL_BIG_YAW (0.001f)
 #define SAT_LIMIT_GIMBAL_BIG_YAW (1)
-#define POS_ESP_GIMBAL_BIG_YAW (0.001f)
+#define POS_ESP_GIMBAL_BIG_YAW (0.0001f)
 #define U_MAX_GIMBAL_BIG_YAW (25000)
 
 

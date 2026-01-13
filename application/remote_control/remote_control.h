@@ -78,7 +78,7 @@
 #define ET08A_RC_CH_VALUE_OFFSET      ((uint16_t)1024)
 #define ET08A_RC_CH_VALUE_MAX         ((uint16_t)1694)
 
-#define ET08A_RC_CONNECTED_FLAG       ((uint8_t)0)
+#define ET08A_RC_CONNECTED_FLAG       ((uint8_t)3)
 
 
 #define RC_TO_ONE 0.0015151515151515f  // (1/660)遥控器通道值归一化系数

@@ -228,7 +228,7 @@ void GimbalSetMode(void)
   {
     gimbal.mode=GIMBAL_IMU;
   }
-  // 上裆自动模式
+  // 上档自动模式
   else if (switch_is_up(gimbal.rc->rc.s[0]))
   {
     //初次开启上档或第一次丢失目标时间超出阈值则进入GAP模式

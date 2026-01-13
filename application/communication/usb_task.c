@@ -723,6 +723,8 @@ inline float GetScCmdGimbalAngle(uint8_t axis)
  * @param axis 轴id，可配合定义好的轴id宏使用
  * @return float (m/s) 底盘坐标系下axis方向运动线速度
  */
+#if __SELF_BOARD_ID == C_BOARD_OMNI_SENTRY_ROT_GIMBAL
+#else
 inline float GetScCmdChassisSpeed(uint8_t axis)
 {
     if (axis == AX_X)
@@ -740,7 +742,7 @@ inline float GetScCmdChassisSpeed(uint8_t axis)
     }
     return 0.0f;
 }
-
+#endif
 /**
  * @brief 获取上位机控制指令：底盘离地高度，平衡底盘中可用作腿长参数
  * @param void
