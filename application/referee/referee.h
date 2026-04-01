@@ -61,22 +61,14 @@ typedef __packed struct  //0x0002
 } game_result_t;
 typedef __packed struct  //0x0003
 {
-    uint16_t red_1_robot_HP;  //红 1 英雄机器人血量。若该机器人未上场或者被罚下，则血量为 0
-    uint16_t red_2_robot_HP;   //红 2 工程机器人血量
-    uint16_t red_3_robot_HP;   //红 3 步兵机器人血量
-    uint16_t red_4_robot_HP;   //红 4 步兵机器人血量
-    uint16_t red_5_robot_HP;   //红 5 步兵机器人血量
-    uint16_t red_7_robot_HP;   //红 7 哨兵机器人血量
-    uint16_t red_outpost_HP;   //红方前哨站血量
-    uint16_t red_base_HP;      //红方基地血量
-    uint16_t blue_1_robot_HP;  //蓝 1 英雄机器人血量
-    uint16_t blue_2_robot_HP;  //蓝 2 工程机器人血量
-    uint16_t blue_3_robot_HP;  //蓝 3 步兵机器人血量
-    uint16_t blue_4_robot_HP;  //蓝 4 步兵机器人血量
-    uint16_t blue_5_robot_HP;  //蓝 5 步兵机器人血量
-    uint16_t blue_7_robot_HP;  //蓝 7 哨兵机器人血量
-    uint16_t blue_outpost_HP;  //蓝方前哨站血量
-    uint16_t blue_base_HP;     //蓝方基地血量
+    uint16_t ally_1_robot_HP; 
+    uint16_t ally_2_robot_HP; 
+    uint16_t ally_3_robot_HP; 
+    uint16_t ally_4_robot_HP; 
+    uint16_t reserved; 
+    uint16_t ally_7_robot_HP; 
+    uint16_t ally_outpost_HP; 
+    uint16_t ally_base_HP;
 } game_robot_HP_t;
 typedef __packed struct  //0x0101
 {
@@ -182,6 +174,7 @@ typedef __packed struct  //0x0208
 typedef __packed struct  //0x0209
 {
     uint32_t rfid_status;
+    uint8_t rfid_status_2;
 } rfid_status_t;
 typedef __packed struct
 {
@@ -219,6 +212,7 @@ typedef __packed struct  //0x020C
 typedef __packed struct  //0x020D
 {
     uint32_t sentry_info;
+    uint8_t sentry_info_2;
 } sentry_info_t;
 typedef __packed struct  //0x020E
 {
@@ -269,20 +263,31 @@ typedef __packed struct
     uint16_t reserved;
 } ext_robot_command_t;
 
+typedef __packed struct 
+{
+    uint32_t sentry_cmd; 
+} sentry_cmd_t;
+
 extern game_robot_HP_t game_robot_HP;
 extern robot_status_t robot_status;
 extern game_status_t game_status;
+extern rfid_status_t RFID_STATUS;
 extern void init_referee_struct_data(void);
 extern void referee_data_solve(uint8_t * frame);
 
 extern void get_chassis_power_and_buffer(fp32 * power, fp32 * buffer);
+extern float get_chassis_power(void);
+extern float get_buffer(void);
 extern uint16_t get_shoot_heat(void);
+extern uint16_t get_current_HP(void);
 extern uint8_t get_robot_id(void);
 extern uint8_t get_team_color(void);
-extern void get_shoot_heat17_limit_and_heat17(uint16_t * heat17_limit, uint16_t * heat17);
+extern void get_shoot_heat17_limit_and_heat17(uint16_t * cooling_value, uint16_t * heat17_limit, uint16_t * heat17);
 extern void get_shoot_heat42_limit_and_heat42(uint16_t *heat_limit, uint16_t *heat);
 
 extern CustomControllerData_t * GetCustomControllerDataPoint(void);
+
+extern void GetSentryInfo(uint32_t sentry_info, uint8_t sentry_info_2);
 
 /*========== API ==========*/
 

@@ -31,6 +31,8 @@
 #include "math.h"
 #include "usb_debug.h"
 #include "supervisory_computer_cmd.h"
+#include "communication.h"
+#include "chassis_power_control.h"
 
 Chassis_s chassis;
 PID_t chassis_pid;
@@ -92,7 +94,7 @@ void ChassisSetMode(void)
    }
 #endif
 #if (CONTROL_TYPE == CHASSIS_AND_GIMBAL)
-   if ((toe_is_error(DBUS_TOE)) || switch_is_down(chassis.rc->rc.s[CHASSIS_MODE_CHANNEL]) || GetGimbalInitJudgeReturn() == false)
+   if (switch_is_down(chassis.rc->rc.s[CHASSIS_MODE_CHANNEL]) || GetGimbalInitJudgeReturn() == false)
    {
        chassis.mode = CHASSIS_LOCK;
    }
@@ -100,7 +102,7 @@ void ChassisSetMode(void)
    {
        chassis.mode = CHASSIS_FOLLOW;
    }
-   else if (switch_is_up(chassis.rc->rc.s[CHASSIS_MODE_CHANNEL]))
+   else if (switch_is_up(chassis.rc->rc.s[CHASSIS_MODE_CHANNEL]) || (toe_is_error(DBUS_TOE)))
    {
        chassis.mode = CHASSIS_IMU; // 哨兵上为全自动模式
    }
@@ -128,6 +130,7 @@ void ChassisObserver(void)
     }
 
     chassis.yaw_delta = GetGimbalDeltaYawMid();
+    chassis.aim_yaw_delta = GetUartGimbalYawMotorPos();
 }
 
 /*-------------------- Reference --------------------*/
@@ -212,6 +215,7 @@ void ChassisReference(void)
         chassis.reference.vy =  chassis.reference_rc.vx * sinf(chassis.yaw_delta) + chassis.reference_rc.vy * cosf(chassis.yaw_delta);
         
         chassis.reference.wz =  GetScCmdChassisSpeed(AX_Z);
+        // chassis.reference.wz =  17.0;
     }
 }
 
@@ -233,6 +237,8 @@ void ChassisConsole(void)
     {
         chassis.wheel[i].set.curr = PID_calc(&chassis_pid.wheel_velocity[i], chassis.feedback[i], chassis.set[i]);
     }
+
+    ChassisPowerControl(&chassis);
 }
 
 /*-------------------- Cmd --------------------*/

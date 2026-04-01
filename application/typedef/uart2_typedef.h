@@ -134,6 +134,9 @@ typedef struct
         bool init_judge;
         bool auto_aim_judge;
         bool rc_offline;
+        float power;
+        float buffer;
+
         struct
         {
             float vx;

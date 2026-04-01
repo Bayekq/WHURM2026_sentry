@@ -41,6 +41,7 @@
   */
 static void referee_unpack_fifo_data(void);
 
+void sentryCmdSend(uint32_t);
  
 extern UART_HandleTypeDef huart6;
 
@@ -49,6 +50,8 @@ uint8_t usart6_buf[2][USART_RX_BUF_LENGHT];
 fifo_s_t referee_fifo;
 uint8_t referee_fifo_buf[REFEREE_FIFO_BUF_LENGTH];
 unpack_data_t referee_unpack_obj;
+
+uint32_t sentry_cmd;
 
 /**
   * @brief          referee task
@@ -68,7 +71,7 @@ void referee_usart_task(void const * argument)
 
     while(1)
     {
-
+        sentryCmdSend(sentry_cmd);
         referee_unpack_fifo_data();
         osDelay(10);
     }
@@ -96,11 +99,11 @@ void referee_unpack_fifo_data(void)
     byte = fifo_s_get(&referee_fifo);
     switch(p_obj->unpack_step)
     {
-      case STEP_HEADER_SOF:
+      case RSTEP_HEADER_SOF:
       {
         if(byte == sof)
         {
-          p_obj->unpack_step = STEP_LENGTH_LOW;
+          p_obj->unpack_step = RSTEP_LENGTH_LOW;
           p_obj->protocol_packet[p_obj->index++] = byte;
         }
         else
@@ -109,35 +112,35 @@ void referee_unpack_fifo_data(void)
         }
       }break;
       
-      case STEP_LENGTH_LOW:
+      case RSTEP_LENGTH_LOW:
       {
         p_obj->data_len = byte;
         p_obj->protocol_packet[p_obj->index++] = byte;
-        p_obj->unpack_step = STEP_LENGTH_HIGH;
+        p_obj->unpack_step = RSTEP_LENGTH_HIGH;
       }break;
       
-      case STEP_LENGTH_HIGH:
+      case RSTEP_LENGTH_HIGH:
       {
         p_obj->data_len |= (byte << 8);
         p_obj->protocol_packet[p_obj->index++] = byte;
 
         if(p_obj->data_len < (REF_PROTOCOL_FRAME_MAX_SIZE - REF_HEADER_CRC_CMDID_LEN))
         {
-          p_obj->unpack_step = STEP_FRAME_SEQ;
+          p_obj->unpack_step = RSTEP_FRAME_SEQ;
         }
         else
         {
-          p_obj->unpack_step = STEP_HEADER_SOF;
+          p_obj->unpack_step = RSTEP_HEADER_SOF;
           p_obj->index = 0;
         }
       }break;
-      case STEP_FRAME_SEQ:
+      case RSTEP_FRAME_SEQ:
       {
         p_obj->protocol_packet[p_obj->index++] = byte;
-        p_obj->unpack_step = STEP_HEADER_CRC8;
+        p_obj->unpack_step = RSTEP_HEADER_CRC8;
       }break;
 
-      case STEP_HEADER_CRC8:
+      case RSTEP_HEADER_CRC8:
       {
         p_obj->protocol_packet[p_obj->index++] = byte;
 
@@ -145,17 +148,17 @@ void referee_unpack_fifo_data(void)
         {
           if ( verify_CRC8_check_sum(p_obj->protocol_packet, REF_PROTOCOL_HEADER_SIZE) )
           {
-            p_obj->unpack_step = STEP_DATA_CRC16;
+            p_obj->unpack_step = RSTEP_DATA_CRC16;
           }
           else
           {
-            p_obj->unpack_step = STEP_HEADER_SOF;
+            p_obj->unpack_step = RSTEP_HEADER_SOF;
             p_obj->index = 0;
           }
         }
       }break;  
       
-      case STEP_DATA_CRC16:
+      case RSTEP_DATA_CRC16:
       {
         if (p_obj->index < (REF_HEADER_CRC_CMDID_LEN + p_obj->data_len))
         {
@@ -163,7 +166,7 @@ void referee_unpack_fifo_data(void)
         }
         if (p_obj->index >= (REF_HEADER_CRC_CMDID_LEN + p_obj->data_len))
         {
-          p_obj->unpack_step = STEP_HEADER_SOF;
+          p_obj->unpack_step = RSTEP_HEADER_SOF;
           p_obj->index = 0;
 
           if ( verify_CRC16_check_sum(p_obj->protocol_packet, REF_HEADER_CRC_CMDID_LEN + p_obj->data_len) )
@@ -175,7 +178,7 @@ void referee_unpack_fifo_data(void)
 
       default:
       {
-        p_obj->unpack_step = STEP_HEADER_SOF;
+        p_obj->unpack_step = RSTEP_HEADER_SOF;
         p_obj->index = 0;
       }break;
     }
@@ -226,3 +229,10 @@ void UI_SendByte(unsigned char ch)
 		}
 }
 
+void sentryCmdSend(uint32_t sentry_cmd)
+{
+    HAL_StatusTypeDef state=HAL_UART_Transmit(&huart6, (uint8_t *)(&sentry_cmd), sizeof(uint32_t),50);
+    if(state==HAL_OK){
+				//提示发送成功
+		}
+}

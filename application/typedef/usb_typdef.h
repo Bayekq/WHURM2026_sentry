@@ -26,10 +26,12 @@
 #define ROBOT_STATUS_SEND_ID      ((uint8_t)0x0B)
 #define JOINT_STATE_SEND_ID       ((uint8_t)0x0C)
 #define BUFF_SEND_ID              ((uint8_t)0x0D)
+#define SENTRYINFO_SEND_ID        ((uint8_t)0x0E)
 
 #define ROBOT_CMD_DATA_RECEIVE_ID  ((uint8_t)0x01)
 #define PID_DEBUG_DATA_RECEIVE_ID  ((uint8_t)0x02)
 #define VIRTUAL_RC_DATA_RECEIVE_ID ((uint8_t)0x03)
+#define SENTRY_CMD_RECEIVE_ID      ((uint8_t)0x04)
 // clang-format on
 
 typedef struct
@@ -105,15 +107,15 @@ typedef struct
             uint8_t custom_controller : 1;
             uint8_t reserve : 3;
         } __packed__ state;
-        // /// @brief 机器人裁判系统信息 7 bytes
-        // struct
-        // {
-        //     uint8_t id;
-        //     uint8_t color;  // 0-red 1-blue 2-unknown
-        //     bool attacked;
-        //     uint16_t hp;
-        //     uint16_t heat;
-        // } __packed__ referee;
+        /// @brief 机器人裁判系统信息 7 bytes
+        struct
+        {
+            uint8_t id;
+            uint8_t color;  // 0-red 1-blue 2-unknown
+            bool attacked;
+            uint16_t hp;
+            uint16_t heat;
+        } __packed__ referee;
     } __packed__ data;
     uint16_t crc;
 } __packed__ SendDataRobotStateInfo_s;
@@ -165,20 +167,14 @@ typedef struct
     uint32_t time_stamp;
     struct
     {
-        uint16_t red_1_robot_hp;
-        uint16_t red_2_robot_hp;
-        uint16_t red_3_robot_hp;
-        uint16_t red_4_robot_hp;
-        uint16_t red_7_robot_hp;
-        uint16_t red_outpost_hp;
-        uint16_t red_base_hp;
-        uint16_t blue_1_robot_hp;
-        uint16_t blue_2_robot_hp;
-        uint16_t blue_3_robot_hp;
-        uint16_t blue_4_robot_hp;
-        uint16_t blue_7_robot_hp;
-        uint16_t blue_outpost_hp;
-        uint16_t blue_base_hp;
+        uint16_t ally_1_robot_HP; 
+        uint16_t ally_2_robot_HP; 
+        uint16_t ally_3_robot_HP; 
+        uint16_t ally_4_robot_HP; 
+        uint16_t reserved; 
+        uint16_t ally_7_robot_HP; 
+        uint16_t ally_outpost_HP; 
+        uint16_t ally_base_HP;
     } __packed__ data;
     uint16_t crc;
 } __packed__ SendDataAllRobotHp_s;
@@ -245,34 +241,34 @@ typedef struct
     FrameHeader_t frame_header;  // 数据段id = 0x0A
     uint32_t time_stamp;
 
+    //   struct
+    // {
+    //     bool base_gain_point;                     // 己方基地增益点
+    //     bool circular_highland_gain_point;        // 己方环形高地增益点
+    //     bool enemy_circular_highland_gain_point;  // 对方环形高地增益点
+    //     bool friendly_r3_b3_gain_point;           // 己方 R3/B3 梯形高地增益点
+    //     bool enemy_r3_b3_gain_point;              // 对方 R3/B3 梯形高地增益点
+    //     bool friendly_r4_b4_gain_point;           // 己方 R4/B4 梯形高地增益点
+    //     bool enemy_r4_b4_gain_point;              // 对方 R4/B4 梯形高地增益点
+    //     bool energy_mechanism_gain_point;         // 己方能量机关激活点
+    //     bool friendly_fly_ramp_front_gain_point;  // 己方飞坡增益点（靠近己方一侧飞坡前）
+    //     bool friendly_fly_ramp_back_gain_point;  // 己方飞坡增益点（靠近己方一侧飞坡后）
+    //     bool enemy_fly_ramp_front_gain_point;  // 对方飞坡增益点（靠近对方一侧飞坡前）
+    //     bool enemy_fly_ramp_back_gain_point;   // 对方飞坡增益点（靠近对方一侧飞坡后）
+    //     bool friendly_outpost_gain_point;      // 己方前哨站增益点
+    //     bool friendly_healing_point;           // 己方补血点（检测到任一均视为激活）
+    //     bool friendly_sentry_patrol_area;      // 己方哨兵巡逻区
+    //     bool enemy_sentry_patrol_area;         // 对方哨兵巡逻区
+    //     bool friendly_big_resource_island;     // 己方大资源岛增益点
+    //     bool enemy_big_resource_island;        // 对方大资源岛增益点
+    //     bool friendly_exchange_area;           // 己方兑换区
+    //     bool center_gain_point;  // 中心增益点 RFID 卡状态（仅 RMUL 适用），1 为已检测到
+    // } __attribute__((packed)) data;
     struct
     {
-        uint32_t base_gain_point : 1;
-        uint32_t central_highland_gain_point : 1;
-        uint32_t enemy_central_highland_gain_point : 1;
-        uint32_t friendly_trapezoidal_highland_gain_point : 1;
-        uint32_t enemy_trapezoidal_highland_gain_point : 1;
-        uint32_t friendly_fly_ramp_front_gain_point : 1;
-        uint32_t friendly_fly_ramp_back_gain_point : 1;
-        uint32_t enemy_fly_ramp_front_gain_point : 1;
-        uint32_t enemy_fly_ramp_back_gain_point : 1;
-        uint32_t friendly_central_highland_lower_gain_point : 1;
-        uint32_t friendly_central_highland_upper_gain_point : 1;
-        uint32_t enemy_central_highland_lower_gain_point : 1;
-        uint32_t enemy_central_highland_upper_gain_point : 1;
-        uint32_t friendly_highway_lower_gain_point : 1;
-        uint32_t friendly_highway_upper_gain_point : 1;
-        uint32_t enemy_highway_lower_gain_point : 1;
-        uint32_t enemy_highway_upper_gain_point : 1;
-        uint32_t friendly_fortress_gain_point : 1;
-        uint32_t friendly_outpost_gain_point : 1;
-        uint32_t friendly_supply_zone_non_exchange : 1;
-        uint32_t friendly_supply_zone_exchange : 1;
-        uint32_t friendly_big_resource_island : 1;
-        uint32_t enemy_big_resource_island : 1;
-        uint32_t center_gain_point : 1;  
-        uint32_t reserved : 8;    
-    } __packed__ data;
+        uint32_t rfid_status;
+        uint8_t rfid_status_2;
+    } __attribute__((packed)) data;
     uint16_t crc;            
 } __packed__ SendDataRfidStatus_s;
 
@@ -338,6 +334,22 @@ typedef struct
 
     uint16_t crc;
 } __packed__ SendDataBuff_s;
+
+// 哨兵信息数据包
+typedef struct
+{
+    FrameHeader_t frame_header;  // 数据段id = 0x0E
+    uint32_t time_stamp;
+
+    struct 
+    {
+        uint32_t sentry_info;    // bit 0-31
+        uint16_t sentry_info_2;  // bit 0-15
+    } __packed__ data;
+
+    uint16_t crc;
+} __packed__ SendDataSentryInfo_s;
+
 /*-------------------- Receive --------------------*/
 typedef struct RobotCmdData
 {
@@ -396,4 +408,13 @@ typedef struct
     RC_ctrl_t data;
     uint16_t crc;
 } __packed__ ReceiveDataVirtualRc_s;
+
+typedef struct 
+{
+    FrameHeader_t frame_header;  // 数据段id = 0x04
+    uint32_t time_stamp;
+    uint32_t sentry_cmd;
+    uint16_t crc;
+} __packed__ ReceiveDataSentryCmd_s;
+
 #endif  // USB_TYPEDEF_H

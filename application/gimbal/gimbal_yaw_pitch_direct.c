@@ -79,7 +79,8 @@ bool Gimbal_direct_init_judge (void)
 
   else if (axis == AX_YAW)
   {
-    return value - CmdGimbalJointState(AX_YAW) + gimbal.feedback_pos.yaw;
+    return loop_fp32_constrain(gimbal.yaw.direction * (gimbal.yaw.fdb.pos - GIMBAL_YAW_MID),-M_PI,M_PI); 
+    // return value - CmdGimbalJointState(AX_YAW) + gimbal.feedback_pos.yaw;
   }
   
   else 
@@ -164,7 +165,8 @@ inline float CmdGimbalJointState(uint8_t axis)
   }
   else if ( axis == AX_YAW )
   {
-    return loop_fp32_constrain(gimbal.yaw.fdb.pos - GIMBAL_YAW_MID,-M_PI,M_PI); 
+    // return loop_fp32_constrain(gimbal.yaw.fdb.pos - GIMBAL_YAW_MID,-M_PI,M_PI); 
+    return loop_fp32_constrain(gimbal.yaw.direction * (gimbal.yaw.fdb.pos - GIMBAL_YAW_MID),-M_PI,M_PI);
     // return gimbal.feedback_pos.yaw;
   }
   else 
@@ -259,7 +261,29 @@ void GimbalSetMode(void)
 {
   if ( toe_is_error(DBUS_TOE) )
   {
-    gimbal.mode=GIMBAL_DBUS_ERR;
+    if(gimbal.yaw.offline||gimbal.pitch.offline)
+    {
+      gimbal.mode=GIMBAL_GAP;
+      return;
+    }
+    // gimbal.mode=GIMBAL_DBUS_ERR;
+    //初次开启上档或第一次丢失目标时间超出阈值则进入GAP模式
+    if(gimbal.scan && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN)
+    {
+      gimbal.mode=GIMBAL_GAP;
+      return;
+    }
+    //GAP模式之后，进入SCAN模式，此时没有新目标就保持SCAN模式
+    // 此时big_yaw解锁，开始扫描敌人
+    if(gimbal.scan)
+    {  
+    gimbal.mode=GIMBAL_SCAN;
+    }
+    // 进入自瞄，此时big_yaw固定
+    else
+    {
+    gimbal.mode=GIMBAL_AUTO_AIM;
+    }
   }
 
   else if (gimbal.last_mode == GIMBAL_DBUS_ERR)
@@ -295,6 +319,11 @@ void GimbalSetMode(void)
   // 上裆自动模式
   else if (switch_is_up(gimbal.rc->rc.s[0]))
   {
+    if(gimbal.yaw.offline||gimbal.pitch.offline)
+    {
+      gimbal.mode=GIMBAL_GAP;
+      return;
+    }
     //初次开启上档或第一次丢失目标时间超出阈值则进入GAP模式
     if(gimbal.scan && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN)
     {

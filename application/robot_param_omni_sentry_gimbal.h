@@ -21,8 +21,8 @@
 #define __CONTROL_LINK_KM  CL_KM_RC      // 控制链路选择：键鼠数据
 
 #define __BOARD_INSTALL_SPIN_MATRIX \
+    {1.0f, 0.0f, 0.0f}, \
     {0.0f, 1.0f, 0.0f}, \
-    {-1.0f, 0.0f, 0.0f}, \
     {0.0f, 0.0f, 1.0f}
 
 /*******************************************************************************/
@@ -69,7 +69,7 @@
 #define GIMBAL_PITCH_MODE (0)
 
 //physical parameters ---------------------
-#define GIMBAL_UPPER_LIMIT_PITCH (0.17f)
+#define GIMBAL_UPPER_LIMIT_PITCH (0.35f)
 #define GIMBAL_LOWER_LIMIT_PITCH (-0.42f)
 
 #define GIMBAL_UPPER_LIMIT_YAW (1.5f)
@@ -77,7 +77,7 @@
 
 //电机角度中值设置
 #define GIMBAL_PITCH_MID (-2.38917518f)  //云台初始化正对齐的时候使用的pitch轴正中心量
-#define GIMBAL_YAW_MID (-1.34683514f)    //云台初始化正对齐的时候使用的yaw轴正中心量
+#define GIMBAL_YAW_MID (1.86225295f)    //云台初始化正对齐的时候使用的yaw轴正中心量
 
 //扫描模式步长&正弦信号参数
 #define GIMBAL_SCAN_STEP (0.0015f)
@@ -92,8 +92,8 @@
 #define GIMBAL_SAMPLE_TIME (0.001f) // 云台采样周期(s)
 
 //AIM YAW
-#define J_GIMBAL_YAW (10.0f)
-#define K_GIMBAL_YAW (600.0f)
+#define J_GIMBAL_YAW (15.0f)
+#define K_GIMBAL_YAW (150.0f)
 #define C_GIMBAL_YAW (15.0f)
 #define epsilon_GIMBAL_YAW (0.001f)
 #define SAT_LIMIT_GIMBAL_YAW (1)
@@ -101,10 +101,10 @@
 #define U_MAX_GIMBAL_YAW (15000)
 
 //PITCH轴SMC参数
-#define J_GIMBAL_PITCH (5.0f)
-#define K_GIMBAL_PITCH (500.0f)
-#define C1_GIMBAL_PITCH (50.0f)
-#define C2_GIMBAL_PITCH (0.01f)
+#define J_GIMBAL_PITCH (20.0f)
+#define K_GIMBAL_PITCH (750.0f)
+#define C1_GIMBAL_PITCH (60.0f)
+#define C2_GIMBAL_PITCH (0.05f)
 #define epsilon_GIMBAL_PITCH (0.001f)
 #define SAT_LIMIT_GIMBAL_PITCH (1)
 #define POS_ESP_GIMBAL_PITCH (0.0001f)
@@ -131,8 +131,8 @@
 
 //旋转方向
 #define TRIGGER_MOTOR_DIRECTION (1)
-#define FRIC_MOTOR_R_DIRECTION (1)
-#define FRIC_MOTOR_L_DIRECTION (-1)
+#define FRIC_MOTOR_R_DIRECTION (-1)
+#define FRIC_MOTOR_L_DIRECTION (1)
 
 //电机ID
 #define TRIGGER_MOTOR_ID 1
@@ -147,11 +147,11 @@
 //电机std_id
 #define STD_ID 0X200
 //单环拨弹速度
-#define TRIGGER_SPEED (-285.0f)
+#define TRIGGER_SPEED (-350.0f)
 //摩擦轮速度
-#define FRIC_R_SPEED (-800.0f)
-#define FRIC_L_SPEED (800.0f)
-#define FRIC_SPEED_LIMIT (700.0f)
+#define FRIC_R_SPEED (600.0f)
+#define FRIC_L_SPEED (-600.0f)
+#define FRIC_SPEED_LIMIT (500.0f)
 #define FRIC_SPEED_ERROR_THRESHOLD (20.0f)
 
 /*ECD parameters------------*/
@@ -174,7 +174,7 @@
 
 /*SENTRY parameters ---------------------*/
 // 目标丢失次数阈值，超过该值则认为目标丢失，关闭摩擦轮（通过记录开火控制关闭时间来判断，与云台控制解耦）
-#define AIM_LOST_TIME_THRESHOLD 1000  // ms
+#define AIM_LOST_TIME_THRESHOLD 3000  // ms
 
 /*MIT parameters ---------------------*/
 

@@ -78,4 +78,16 @@ typedef struct
 
 } RobotCmdData_t;
 
+typedef struct
+{
+    bool confirm_revival;
+    bool instant_revival;
+    unsigned int purchase_ammo;
+    unsigned int remote_purchase_ammo_times;
+    unsigned int remote_purchase_HP_time;
+    unsigned int stance; //哨兵姿态 1 为进攻姿态，2 为防御姿态，3 为移动姿态，默认为 3；修改此值即可改变哨兵姿态。
+    bool energy_motivated;
+    unsigned int reserved;
+} Detailed_SentryCmd_t;
+
 #endif  // __CUSTOM_TYPEDEF_H

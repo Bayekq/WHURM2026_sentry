@@ -50,6 +50,10 @@ ext_bullet_remaining_t bullet_remaining_t;
 robot_interaction_data_t student_interactive_data_t;
 CustomControllerData_t CUSTOM_CONTROLLER_DATA;  //自定义控制器数据
 
+rfid_status_t RFID_STATUS;
+ground_robot_position_t ground_robot_pos_t;
+sentry_info_t sentry_decision_info_t;
+
 ext_robot_command_t robot_command_t;
 
 void init_referee_struct_data(void)
@@ -177,6 +181,18 @@ void referee_data_solve(uint8_t * frame)
             memcpy(&robot_command_t, frame + index, sizeof(ext_robot_command_t));
             referee_online_time = HAL_GetTick();
         } break;
+        case RFID_STATUS_ID: {
+            memcpy(&RFID_STATUS, frame + index, sizeof(rfid_status_t));
+            referee_online_time = HAL_GetTick();
+        } break;
+        case GOUND_ROBOT_POS_ID: {
+            memcpy(&ground_robot_pos_t, frame + index, sizeof(robot_pos_t));
+            referee_online_time = HAL_GetTick();
+        } break;
+        case SENTRY_DECISION_INFO_ID: {
+            memcpy(&sentry_decision_info_t, frame + index, sizeof(sentry_info_t));
+            referee_online_time = HAL_GetTick();
+        } break;
         default: {
             referee_receive_count--;
             break;
@@ -190,19 +206,24 @@ void get_chassis_power_and_buffer(fp32 * power, fp32 * buffer)
     *buffer = power_heat_data.buffer_energy;
 }
 
+float get_chassis_power(void) { return power_heat_data.chassis_power; }
+float get_buffer(void) { return power_heat_data.buffer_energy; }
+
+
 uint8_t get_robot_id(void) { return robot_status.robot_id; }
 
-void get_shoot_heat17_limit_and_heat17(uint16_t * heat_limit, uint16_t * heat)
+void get_shoot_heat17_limit_and_heat17(uint16_t * cooling_value, uint16_t * heat_limit, uint16_t * heat)
 {
+    *cooling_value = robot_status.shooter_barrel_cooling_value;
     *heat_limit = robot_status.shooter_barrel_heat_limit;
     *heat = power_heat_data.shooter_17mm_barrel_heat;
 }
 
-void get_shoot_heat42_limit_and_heat42(uint16_t * heat_limit, uint16_t * heat)
-{
-    *heat_limit = robot_status.shooter_barrel_heat_limit;
-    *heat = power_heat_data.shooter_42mm_barrel_heat;
-}
+// void get_shoot_heat42_limit_and_heat42(uint16_t * heat_limit, uint16_t * heat)
+// {
+//     *heat_limit = robot_status.shooter_barrel_heat_limit;
+//     *heat = power_heat_data.shooter_42mm_barrel_heat;
+// }
 
 /**
  * @brief 反馈机器人颜色
@@ -251,6 +272,17 @@ uint8_t get_team_color(void)  // 谨防“哨兵在打我”
 // }
 
 CustomControllerData_t * GetCustomControllerDataPoint(void) { return &CUSTOM_CONTROLLER_DATA; }
+
+void GetSentryInfo(uint32_t sentry_info, uint8_t sentry_info_2)
+{
+    sentry_info = sentry_decision_info_t.sentry_info;
+    sentry_info_2 = sentry_decision_info_t.sentry_info_2;
+}
+
+uint16_t get_current_HP(void)
+{
+    return robot_status.current_HP;
+}
 
 /*========== API ==========*/
 

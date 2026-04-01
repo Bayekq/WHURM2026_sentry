@@ -33,6 +33,9 @@ typedef enum
     ROBOT_HURT_CMD_ID                 = 0x0206,
     SHOOT_DATA_CMD_ID                 = 0x0207,
     BULLET_REMAINING_CMD_ID           = 0x0208,
+    RFID_STATUS_ID                    = 0x0209,
+    GOUND_ROBOT_POS_ID                = 0x020B,
+    SENTRY_DECISION_INFO_ID           = 0x020D,
     STUDENT_INTERACTIVE_DATA_CMD_ID   = 0x0301,
     CUSTOM_CONTROLLER_CMD_ID          = 0x0302, //自定义控制器数据
 	  ROBOT_COMMAND_CMD_ID              = 0x0304,
@@ -48,12 +51,12 @@ typedef  struct
 
 typedef enum
 {
-  STEP_HEADER_SOF  = 0,
-  STEP_LENGTH_LOW  = 1,
-  STEP_LENGTH_HIGH = 2,
-  STEP_FRAME_SEQ   = 3,
-  STEP_HEADER_CRC8 = 4,
-  STEP_DATA_CRC16  = 5,
+  RSTEP_HEADER_SOF  = 0,
+  RSTEP_LENGTH_LOW  = 1,
+  RSTEP_LENGTH_HIGH = 2,
+  RSTEP_FRAME_SEQ   = 3,
+  RSTEP_HEADER_CRC8 = 4,
+  RSTEP_DATA_CRC16  = 5,
 } unpack_step_e;
 
 typedef struct

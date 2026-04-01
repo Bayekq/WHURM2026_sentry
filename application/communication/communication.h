@@ -33,6 +33,8 @@ extern void Uart2TaskLoop(void);
 
 extern bool GetUartOffline(void);
 extern bool GetUartRcOffline(void);
+extern float GetUartHeat(void);
+extern float GetUartBuffer(void);
 extern float GetUartGimbalYawMotorPos(void);
 extern bool GetUartGimbalInitJudge(void);
 extern uint32_t GetUartTimeStampForTest(void);

@@ -387,7 +387,7 @@ static void GetDjiFdbData(Motor_s * p_motor, const DjiMotorMeasure_t * p_dji_mot
     p_motor->fdb.last_pos = p_motor->fdb.pos;
     p_motor->fdb.pos = p_dji_motor_measure->ecd * 2 * M_PI / 8192 - M_PI;
     p_motor->fdb.temp = p_dji_motor_measure->temperate;
-    p_motor->fdb.curr = p_dji_motor_measure->given_current;
+    p_motor->fdb.curr = p_dji_motor_measure->given_current*0.001f;
     p_motor->fdb.ecd = p_dji_motor_measure->ecd;
     uint32_t now = HAL_GetTick();
     if (now - p_dji_motor_measure->last_fdb_time > MOTOR_STABLE_RUNNING_TIME) {

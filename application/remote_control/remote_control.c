@@ -510,6 +510,22 @@ static void Et08aSbusToRc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl){
     SBUS_DECODE()
     SBUS_LOST_CHECK()
 
+    uint8_t flag =sbus_buf[23];
+
+    if(flag == 15 || flag == 0)
+    {
+    rc_ctrl->rc.ch[0] = 0;
+    rc_ctrl->rc.ch[1] = 0;
+    rc_ctrl->rc.ch[2] = 0;
+    rc_ctrl->rc.ch[3] = 0;
+
+    static char sw_mapping[3] = {RC_SW_UP, RC_SW_MID, RC_SW_DOWN};
+    rc_ctrl->rc.s[0] = sw_mapping[0];
+    rc_ctrl->rc.s[1] = sw_mapping[1];
+    }
+
+    if(flag == 3)
+    {
     // 将SBUS通道数据转换为DT7遥控器数据，方便兼容使用
     rc_ctrl->rc.ch[0] =  (sbus.ch[0] - ET08A_RC_CH_VALUE_OFFSET) / 671.0f * 660;
     rc_ctrl->rc.ch[1] = -(sbus.ch[1] - ET08A_RC_CH_VALUE_OFFSET) / 671.0f * 660;
@@ -519,6 +535,7 @@ static void Et08aSbusToRc(volatile const uint8_t *sbus_buf, RC_ctrl_t *rc_ctrl){
     static char sw_mapping[3] = {RC_SW_UP, RC_SW_MID, RC_SW_DOWN};
     rc_ctrl->rc.s[0] = sw_mapping[(sbus.ch[5] - ET08A_RC_CH_VALUE_OFFSET) / 670 + 1];
     rc_ctrl->rc.s[1] = sw_mapping[(sbus.ch[4] - ET08A_RC_CH_VALUE_OFFSET) / 670 + 1];
+    }
 
     // ET08A 遥控器没有鼠标和键盘数据
     SPECIAL_CHANNEL_SET_SERO()

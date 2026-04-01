@@ -93,6 +93,7 @@ typedef struct
     fp32 set[4];
 
     fp32 yaw_delta;
+    fp32 aim_yaw_delta;
 } Chassis_s;
 
 

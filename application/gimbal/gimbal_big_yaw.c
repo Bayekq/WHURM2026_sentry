@@ -16,6 +16,7 @@
 */
 
 #include "gimbal_big_yaw.h"
+#include "referee.h"
 #if (GIMBAL_TYPE == GIMBAL_BIG_YAW)
 
 Gimbal_s gimbal;
@@ -195,7 +196,50 @@ void GimbalSetMode(void)
 {
   if ( toe_is_error(DBUS_TOE) )
   {
-    gimbal.mode=GIMBAL_DBUS_ERR;
+
+    if(gimbal.yaw.offline)
+    {
+      gimbal.mode=GIMBAL_GAP;
+      return;
+    }
+    // gimbal.mode=GIMBAL_DBUS_ERR;
+    //初次开启上档或第一次丢失目标时间超出阈值则进入GAP模式
+    if(!gimbal.aim_yaw.autoaim && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN)
+    {
+      gimbal.mode=GIMBAL_GAP;
+      return;
+    }
+
+    //GAP模式之后，进入SCAN模式，此时没有新目标就保持SCAN模式
+    // 此时big_yaw解锁，开始扫描敌人
+    if(!gimbal.aim_yaw.autoaim)
+    {  
+    gimbal.mode=GIMBAL_SCAN;
+    }
+    // 进入自瞄，此时big_yaw固定，如果小yaw到限位就调整大yaw
+    else if(gimbal.aim_yaw.autoaim && gimbal.mode!=GIMBAL_FOLLOW)
+    {
+      if(gimbal.aim_yaw.offset_status)
+      {
+        gimbal.mode=GIMBAL_FOLLOW;
+      }
+      else
+      {
+        gimbal.mode=GIMBAL_AUTO_AIM;
+      }
+    }
+    else if(gimbal.aim_yaw.autoaim && gimbal.mode==GIMBAL_FOLLOW)
+    {
+      gimbal.follow_continue=Gimbal_follow_judge();
+      if(gimbal.follow_continue)
+      {
+        gimbal.mode=GIMBAL_AUTO_AIM;
+      }
+      else
+      {
+        gimbal.mode=GIMBAL_FOLLOW;
+      }
+    }
   }
 
   else if (gimbal.last_mode == GIMBAL_DBUS_ERR)
@@ -231,6 +275,12 @@ void GimbalSetMode(void)
   // 上档自动模式
   else if (switch_is_up(gimbal.rc->rc.s[0]))
   {
+    if(gimbal.yaw.offline)
+    {
+      gimbal.mode=GIMBAL_GAP;
+      return;
+    }
+
     //初次开启上档或第一次丢失目标时间超出阈值则进入GAP模式
     if(!gimbal.aim_yaw.autoaim && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN)
     {

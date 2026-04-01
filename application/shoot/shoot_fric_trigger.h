@@ -26,6 +26,7 @@
 #include "motor.h"
 #include "pid.h"
 #include "remote_control.h"
+#include "referee.h"
 #include "shoot.h"
 #include "CAN_communication.h"
 #include "math.h"
@@ -41,6 +42,7 @@ typedef enum
 {
     LOAD_STOP,      // 停止拨盘
     LAOD_BULLET,    // 单发模式
+    LOAD_NO_LIMIT,   // 无热量限制的连发模式
     LOAD_BURSTFIRE,  // 连发模式,对速度闭环
     LOAD_BLOCK       // 堵转，模式
 } LoadMode_e;
@@ -104,6 +106,7 @@ typedef struct
   int16_t ecd_count;//     ecd计数
 
     // heat
+  uint16_t cooling_value;
   uint16_t heat_limit;
   uint16_t heat;
   uint16_t mr_time;
@@ -111,6 +114,11 @@ typedef struct
     // sentry
   uint16_t aim_lost_time;  // 目标丢失计数
   bool     sentry_fric_cmd;// 哨兵全自动模式下摩擦轮控制
+
+   //FireControl
+   int shoot_time;
+   float ShootTime;
+   float shoot_speed;
 
 } Shoot_s;
 
@@ -121,6 +129,8 @@ extern void ShootInit(void);
 extern void ShootSetMode(void);
 
 extern void ShootObserver(void);
+
+extern void FireControl(float shooter_barrel_cooling_value, float shooter_barrel_heat_limit, float shooter_17mm_1_barrel_heat);
 
 extern void ShootReference(void);
 

@@ -33,13 +33,14 @@ Shoot_s SHOOT = {
   .move_flag = 0,
   .ecd_count = 0,
   .shoot_flag = 0,
+  .cooling_value = 0,
   .heat = 0,
   .heat_limit = 0,
   .aim_lost_time = 0,
   .sentry_fric_cmd = false,
 };
 
-
+float target_speed;
 uint8_t fric_ui;
 fp32 delta;
 
@@ -165,10 +166,11 @@ void ShootSetMode(void)
     //清弹
     SHOOT.state = FRIC_READY;
     SHOOT.mode = LOAD_BURSTFIRE;
+    // SHOOT.mode = LOAD_NO_LIMIT;
   } 
 
   //防堵转
-  if (SHOOT.mode == LOAD_BURSTFIRE||SHOOT.mode == LAOD_BULLET)
+  if (SHOOT.mode == LOAD_BURSTFIRE||SHOOT.mode == LOAD_NO_LIMIT||SHOOT.mode == LAOD_BULLET)
   {
     if(SHOOT.block_time >= BLOCK_TIME)
     {
@@ -201,7 +203,7 @@ void ShootSetMode(void)
   }
   
   //热量限制TODO
-  // get_shoot_heat17_limit_and_heat17(&SHOOT.heat_limit, &SHOOT.heat);
+  get_shoot_heat17_limit_and_heat17(&SHOOT.cooling_value, &SHOOT.heat_limit, &SHOOT.heat);
 
   // if ((SHOOT.heat + SHOOT_HEAT_REMAIN_VALUE) > SHOOT.heat_limit)
   // {
@@ -211,8 +213,34 @@ void ShootSetMode(void)
   //遥控器离线保护
   if ( toe_is_error(DBUS_TOE) )
   {        
-    SHOOT.state = FRIC_NOT_READY;
-    SHOOT.mode = LOAD_STOP;
+    // SHOOT.state = FRIC_NOT_READY;
+    // SHOOT.mode = LOAD_STOP;
+    //哨兵上位机控制
+    //哨兵上位机控制
+    if (SHOOT.sentry_fric_cmd)
+    {
+      if(sentry_fric_ready())
+      {
+        SHOOT.state = FRIC_READY;
+      }
+      else
+      {
+        SHOOT.state = FRIC_ON;
+      }
+    }
+    else
+    {
+      SHOOT.state = FRIC_NOT_READY;
+    }
+
+    if (GetScCmdFire() && SHOOT.state==FRIC_READY)
+    {
+      SHOOT.mode = LOAD_BURSTFIRE;
+    }
+    else
+    {
+      SHOOT.mode = LOAD_STOP;
+    }
   }
 }
 
@@ -266,7 +294,7 @@ void ShootObserver(void)
   SHOOT.last_fric_vel = SHOOT.fric_motor[1].fdb.vel;
   
   // 目标丢失计数
-  if (switch_is_mid(SHOOT.rc->rc.s[SHOOT_MODE_CHANNEL]) && !GetScCmdFire())
+  if ((switch_is_mid(SHOOT.rc->rc.s[SHOOT_MODE_CHANNEL])||toe_is_error(DBUS_TOE)) && !GetScCmdFire())
   {
     SHOOT.aim_lost_time++;
     if (SHOOT.aim_lost_time > AIM_LOST_TIME_THRESHOLD)
@@ -282,6 +310,43 @@ void ShootObserver(void)
   SHOOT.sentry_fric_cmd = sentry_fric_on();
 }
 
+/*-------------------- FireControl --------------------*/
+void FireControl(float shooter_barrel_cooling_value, float shooter_barrel_heat_limit, float shooter_17mm_1_barrel_heat)
+{
+    float a = (float)(shooter_barrel_cooling_value);
+    float m = (float)(shooter_barrel_heat_limit - shooter_17mm_1_barrel_heat);
+    float d = 10.0f;                
+    if(SHOOT.shoot_time == 0){
+        /*方案二：根据热量上限和冷却决定射击策略，计算得当射击时间为m（热量上限）+1*a（冷却速率）时基本可以抹除冷却优先和爆发优的差距，即两者各级对应射速相近
+                当k增大时，差距射击频率差距主要体现在低等级（爆发高，冷却低），等级越高影响越小。爆发模式下各等级射频更加均匀且持续时间更长，
+                冷却模式正好相反，低等级射频低，高等级射频高且持续时间短，可灵活选择m+k*a*/
+        SHOOT.ShootTime = (m + 2 * a) * 10;
+        SHOOT.ShootTime = SHOOT.ShootTime<0?0:SHOOT.ShootTime;
+        // SHOOT.ShootTime = SHOOT.ShootTime>600?600:SHOOT.ShootTime;
+        //分级射速
+        if(m < 100){
+            SHOOT.shoot_time++;
+            SHOOT.shoot_speed = (10 * m - a - 3 * d) / (d * (SHOOT.ShootTime/100.0f)) + a / d;
+        }
+        else{
+            SHOOT.shoot_time++;
+            SHOOT.shoot_speed = (10 * m - a - 5 * d) / (d * (SHOOT.ShootTime/100.0f)) + a / d;
+        }
+    }
+    else if(0 < SHOOT.shoot_time && SHOOT.shoot_time < SHOOT.ShootTime){
+        target_speed = SHOOT.shoot_speed * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
+        target_speed = target_speed>350.0f?350.0f:target_speed;
+        target_speed = target_speed<0.0f?0.0f:target_speed;
+    }
+    else{
+        target_speed = (a / d) * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
+        target_speed = target_speed>350.0f?350.0f:target_speed;
+        target_speed = target_speed<0.0f?0.0f:target_speed;
+    }
+    if(SHOOT.shoot_time < SHOOT.ShootTime){
+        SHOOT.shoot_time++;
+    }
+}
 /*-------------------- Reference --------------------*/
 
 /**
@@ -291,6 +356,7 @@ void ShootObserver(void)
  */
 void ShootReference(void) 
 {
+  FireControl(SHOOT.cooling_value, SHOOT.heat_limit, SHOOT.heat);
   switch (SHOOT.state)
   {
   case FRIC_NOT_READY:
@@ -311,6 +377,7 @@ void ShootReference(void)
   switch (SHOOT.mode)
   {
   case LOAD_STOP:
+    SHOOT.shoot_time = 0;
     SHOOT.REF.trigger_speed_ref=0.0f;
     break;
   
@@ -329,12 +396,18 @@ void ShootReference(void)
     }
     break;
 
-  case LOAD_BURSTFIRE:
+  case LOAD_NO_LIMIT:
     SHOOT.REF.trigger_speed_ref = TRIGGER_SPEED;
+    SHOOT.shoot_time = 0;
+    break;
+
+  case LOAD_BURSTFIRE:
+    SHOOT.REF.trigger_speed_ref = -target_speed;
     break;
 
   case LOAD_BLOCK:
     SHOOT.REF.trigger_speed_ref = REVERSE_SPEED;
+    SHOOT.shoot_time = 0;
     break;
 
   default:
@@ -358,7 +431,7 @@ void ShootConsole(void)
   {
       SHOOT.trigger_motor.set.curr = PID_calc(&SHOOT.trigger_speed_pid, SHOOT.FDB.trigger_speed_fdb, SHOOT.REF.trigger_speed_ref);
   }
-  else if (SHOOT.mode == LOAD_BURSTFIRE)
+  else if (SHOOT.mode == LOAD_BURSTFIRE||SHOOT.mode == LOAD_NO_LIMIT)
   {
       SHOOT.trigger_motor.set.curr = PID_calc(&SHOOT.trigger_speed_pid, SHOOT.FDB.trigger_speed_fdb, SHOOT.REF.trigger_speed_ref);
   }

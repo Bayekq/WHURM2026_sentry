@@ -13,7 +13,7 @@
 
 // clang-format off
 #define __SELF_BOARD_ID C_BOARD_OMNI_SENTRY_ROT_GIMBAL // 本板ID
-#define __GYRO_BIAS_YAW  0.000000000f               // 陀螺仪零飘，单位rad/s(调试阶段，暂未设置)
+#define __GYRO_BIAS_YAW  0.00210340872053545781239244422182f               // 陀螺仪零飘，单位rad/s(调试阶段，暂未设置)
 
 #define __BOARD_INSTALL_SPIN_MATRIX \
     {1.0f,  0.0f, 0.0f}, \
@@ -87,12 +87,12 @@
 
 //云台跟随角度环SMC参数
 #define J_CHASSIS_FOLLOW (0.065f)
-#define K_CHASSIS_FOLLOW (55.0f)
+#define K_CHASSIS_FOLLOW (30.0f)
 #define C_CHASSIS_FOLLOW (8.0f)
 #define epsilon_CHASSIS_FOLLOW (0.5f)
 #define SAT_LIMIT_CHASSIS_FOLLOW (1)
-#define POS_ESP_CHASSIS_FOLLOW (0.001f)
-#define U_MAX_CHASSIS_FOLLOW (300)
+#define POS_ESP_CHASSIS_FOLLOW (0.01f)
+#define U_MAX_CHASSIS_FOLLOW (50)
 
 //RC parametes ---------------------
 //遥控器相关参数
@@ -156,11 +156,11 @@
 
 //BIG YAW
 #define J_GIMBAL_BIG_YAW (35.0f)
-#define K_GIMBAL_BIG_YAW (2500.0f)
+#define K_GIMBAL_BIG_YAW (1500.0f)
 #define C_GIMBAL_BIG_YAW (6.0f)
 #define epsilon_GIMBAL_BIG_YAW (0.001f)
 #define SAT_LIMIT_GIMBAL_BIG_YAW (1)
-#define POS_ESP_GIMBAL_BIG_YAW (0.0001f)
+#define POS_ESP_GIMBAL_BIG_YAW (0.001f)
 #define U_MAX_GIMBAL_BIG_YAW (25000)
 
 

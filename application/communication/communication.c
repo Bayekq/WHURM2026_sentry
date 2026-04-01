@@ -31,6 +31,7 @@
 #include "uart2_typedef.h"
 #include "usb_debug.h"
 #include "supervisory_computer_cmd.h"
+#include "referee.h"
 
 /*******************************************************************************/
 /* Macro Definitions                                                           */
@@ -205,6 +206,8 @@ void DataAimyawRenew()
     Send_Data_Aimyaw.data.speed_vector.vx = GetScCmdChassisSpeed(AX_X);
     Send_Data_Aimyaw.data.speed_vector.vy = GetScCmdChassisSpeed(AX_Y);
     Send_Data_Aimyaw.data.speed_vector.wz = GetScCmdChassisSpeed(AX_Z);
+    Send_Data_Aimyaw.data.power = get_chassis_power();
+    Send_Data_Aimyaw.data.buffer = get_buffer();
     append_CRC16_check_sum((uint8_t *)(&Send_Data_Aimyaw), sizeof(Data_Aimyaw_s));
 }
 
@@ -363,6 +366,16 @@ void Uart2TaskLoop(void)
 /*     GetUartAutoAimJudgeReturn                                               */
 /*     GetUartTimeStampForTest                                                 */
 /*******************************************************************************/
+
+float GetUartHeat(void)
+{
+    return Receive_Data_Aimyaw.data.power;
+}
+
+float GetUartBuffer(void)
+{
+    return Receive_Data_Aimyaw.data.buffer;
+}
 
 bool GetUartOffline(void)
 {
