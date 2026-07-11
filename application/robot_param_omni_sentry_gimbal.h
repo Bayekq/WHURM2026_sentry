@@ -82,7 +82,7 @@
 //扫描模式步长&正弦信号参数
 #define GIMBAL_SCAN_STEP (0.0015f)
 #define GIMBAL_SCAN_PITCH_PERIOD (1.25f)  //s
-#define GIMBAL_SCAN_PITCH_AMPLITUDE (0.25f)
+#define GIMBAL_SCAN_PITCH_AMPLITUDE (0.35f)
 #define GIMBAL_SCAN_PITCH_OFFSET (-0.14f)
 
 //自瞄丢失模式切换时间阈值
@@ -92,9 +92,9 @@
 #define GIMBAL_SAMPLE_TIME (0.001f) // 云台采样周期(s)
 
 //AIM YAW
-#define J_GIMBAL_YAW (15.0f)
-#define K_GIMBAL_YAW (150.0f)
-#define C_GIMBAL_YAW (15.0f)
+#define J_GIMBAL_YAW (60.0f)
+#define K_GIMBAL_YAW (160.0f)
+#define C_GIMBAL_YAW (20.0f)
 #define epsilon_GIMBAL_YAW (0.001f)
 #define SAT_LIMIT_GIMBAL_YAW (1)
 #define POS_ESP_GIMBAL_YAW (0.0001f)

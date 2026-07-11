@@ -59,6 +59,8 @@ uint32_t usb_high_water;
 #define SEND_DURATION_JointState   10// ms
 #define SEND_DURATION_Buff         10// ms
 #define SEND_DURATION_SentryInfo   10// ms
+#define SEND_DURATION_MapCommand 10 // ms
+#define SEND_DURATION_InitSpeed 10 // ms
 
 // clang-format on
 
@@ -102,6 +104,8 @@ static SendDataRobotStatus_s SEND_ROBOT_STATUS_DATA;
 static SendDataJointState_s  SEND_JOINT_STATE_DATA;
 static SendDataBuff_s        SEND_BUFF_DATA;
 static SendDataSentryInfo_s  SEND_SENTRY_INFO_DATA;
+static SendDataMapCmd_s SEND_MAP_COMMAND_DATA;
+static SendInitSpeed_s SEND_INIT_SPEED_DATA;
 
 // clang-format on
 
@@ -110,6 +114,7 @@ static ReceiveDataRobotCmd_s RECEIVE_ROBOT_CMD_DATA;
 static ReceiveDataPidDebug_s RECEIVE_PID_DEBUG_DATA;
 static ReceiveDataVirtualRc_s RECEIVE_VIRTUAL_RC_DATA;
 static ReceiveDataSentryCmd_s RECEIVE_SENTRY_CMD_DATA;
+
 
 
 // 机器人控制指令数据
@@ -136,6 +141,8 @@ typedef struct
     uint32_t JointState;
     uint32_t Buff;
     uint32_t SentryInfo;
+    uint32_t MapCommand;
+    uint32_t InitSpeed;
 } LastSendTime_t;
 static LastSendTime_t LAST_SEND_TIME;
 
@@ -165,6 +172,8 @@ static void UsbSendRobotStatusData(void);
 static void UsbSendJointStateData(void);
 static void UsbSendBuffData(void);
 static void UsbSendSentryInfoData(void);
+static void UsbSendMapCommandData(void);
+static void UsbSendInitSpeedData(void);
 
 /*******************************************************************************/
 /* Receive Function                                                            */
@@ -372,6 +381,22 @@ static void UsbInit(void)
     append_CRC8_check_sum(  // 添加帧头 CRC8 校验位
         (uint8_t *)(&SEND_SENTRY_INFO_DATA.frame_header),
         sizeof(SEND_SENTRY_INFO_DATA.frame_header));
+
+    // 15.初始化地图命令数据
+    SEND_MAP_COMMAND_DATA.frame_header.sof = SEND_SOF;
+    SEND_MAP_COMMAND_DATA.frame_header.len = (uint8_t)(sizeof(SendDataMapCmd_s) - 6);
+    SEND_MAP_COMMAND_DATA.frame_header.id = MAP_COMMAND_SEND_ID;
+    append_CRC8_check_sum(  // 添加帧头 CRC8 校验位
+        (uint8_t *)(&SEND_MAP_COMMAND_DATA.frame_header),
+        sizeof(SEND_MAP_COMMAND_DATA.frame_header));
+
+    // 16.初始化弹速数据
+    SEND_INIT_SPEED_DATA.frame_header.sof = SEND_SOF;
+    SEND_INIT_SPEED_DATA.frame_header.len = (uint8_t)(sizeof(SendInitSpeed_s) - 6);
+    SEND_INIT_SPEED_DATA.frame_header.id = INIT_SPEED_SEND_ID;
+    append_CRC8_check_sum(  // 添加帧头 CRC8 校验位
+        (uint8_t *)(&SEND_INIT_SPEED_DATA.frame_header),
+        sizeof(SEND_INIT_SPEED_DATA.frame_header));
 }   
 
 /**
@@ -409,6 +434,10 @@ static void UsbSendData(void)
     CheckDurationAndSend(Buff);
 
     CheckDurationAndSend(SentryInfo);
+
+    CheckDurationAndSend(MapCommand);
+
+    CheckDurationAndSend(InitSpeed);
 }
 
 /**
@@ -659,6 +688,8 @@ static void UsbSendRobotStatusData(void)
     SEND_ROBOT_STATUS_DATA.data.robot_id = robot_status.robot_id;
     SEND_ROBOT_STATUS_DATA.data.current_up = robot_status.current_HP;
     SEND_ROBOT_STATUS_DATA.data.maximum_hp = robot_status.maximum_HP;
+    SEND_ROBOT_STATUS_DATA.data.projectile_allowance_17mm = projectile_allowance.projectile_allowance_17mm;
+    SEND_ROBOT_STATUS_DATA.data.remaining_gold_coin = projectile_allowance.remaining_gold_coin;
 
     append_CRC16_check_sum((uint8_t *)&SEND_ROBOT_STATUS_DATA, sizeof(SendDataRobotStatus_s));
     USB_Transmit((uint8_t *)&SEND_ROBOT_STATUS_DATA, sizeof(SendDataRobotStatus_s));
@@ -691,9 +722,37 @@ static void UsbSendBuffData(void)
 static void UsbSendSentryInfoData(void)
 {
     SEND_SENTRY_INFO_DATA.time_stamp = HAL_GetTick();
-    GetSentryInfo(SEND_SENTRY_INFO_DATA.data.sentry_info, SEND_SENTRY_INFO_DATA.data.sentry_info_2);
+    uint32_t sentry_info;
+    uint16_t sentry_info_2;
+    GetSentryInfo(&sentry_info, &sentry_info_2);
+    SEND_SENTRY_INFO_DATA.data.sentry_info = sentry_info;
+    SEND_SENTRY_INFO_DATA.data.sentry_info_2 = sentry_info_2;
     append_CRC16_check_sum((uint8_t *)&SEND_SENTRY_INFO_DATA, sizeof(SendDataSentryInfo_s));
     USB_Transmit((uint8_t *)&SEND_SENTRY_INFO_DATA, sizeof(SendDataSentryInfo_s));
+}
+
+static void UsbSendMapCommandData(void)
+{
+    SEND_MAP_COMMAND_DATA.time_stamp = HAL_GetTick();
+    float x, y;
+    uint8_t cmd_keyboard, target_robot_id;
+    uint16_t cmd_source;
+    GetMapCommandData(&x, &y, &cmd_keyboard, &target_robot_id, &cmd_source);
+    SEND_MAP_COMMAND_DATA.data.target_position_x = x;
+    SEND_MAP_COMMAND_DATA.data.target_position_y = y;
+    SEND_MAP_COMMAND_DATA.data.cmd_keyboard = cmd_keyboard;
+    SEND_MAP_COMMAND_DATA.data.target_robot_id = target_robot_id;
+    SEND_MAP_COMMAND_DATA.data.cmd_source = cmd_source;
+    append_CRC16_check_sum((uint8_t *)&SEND_MAP_COMMAND_DATA, sizeof(SendDataMapCmd_s));
+    USB_Transmit((uint8_t *)&SEND_MAP_COMMAND_DATA, sizeof(SendDataMapCmd_s));
+}
+
+static void UsbSendInitSpeedData(void)
+{
+    SEND_INIT_SPEED_DATA.time_stamp = HAL_GetTick();
+    SEND_INIT_SPEED_DATA.data.initial_speed = shoot_data.initial_speed;
+    append_CRC16_check_sum((uint8_t *)&SEND_INIT_SPEED_DATA, sizeof(SendInitSpeed_s));
+    USB_Transmit((uint8_t *)&SEND_INIT_SPEED_DATA, sizeof(SendInitSpeed_s));
 }
 
 /*******************************************************************************/
@@ -726,6 +785,11 @@ static void GetVirtualRcCtrlData(void)
 static void GetSentryCmdData(void)
 {
     SENTRY_CMD_DATA = RECEIVE_SENTRY_CMD_DATA.sentry_cmd;
+}
+
+uint32_t GetSentryCmd(void)
+{
+    return SENTRY_CMD_DATA;
 }
 
 /*******************************************************************************/
@@ -826,6 +890,5 @@ inline bool GetScCmdFricOn(void)
     return ROBOT_CMD_DATA.shoot.fric_on;
 }
 
-inline Detailed_SentryCmd_t GetSentryCmd(void);
 
 /*------------------------------ End of File ------------------------------*/

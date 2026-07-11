@@ -146,7 +146,7 @@
 #define GIMBAL_LOWER_LIMIT_AIM_YAW (-1.5f)
 
 //电机角度中值设置
-#define GIMBAL_BIG_YAW_MID (1.53934979f)    // 云台初始化正对齐的时候使用的big_yaw轴正中心量
+#define GIMBAL_BIG_YAW_MID (-1.05154395f)    // 云台初始化正对齐的时候使用的big_yaw轴正中心量
 
 //扫描模式步长
 #define GIMBAL_SCAN_STEP (0.00075f) // 云台扫描步进量(rad)

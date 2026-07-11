@@ -316,35 +316,48 @@ void FireControl(float shooter_barrel_cooling_value, float shooter_barrel_heat_l
     float a = (float)(shooter_barrel_cooling_value);
     float m = (float)(shooter_barrel_heat_limit - shooter_17mm_1_barrel_heat);
     float d = 10.0f;                
-    if(SHOOT.shoot_time == 0){
-        /*方案二：根据热量上限和冷却决定射击策略，计算得当射击时间为m（热量上限）+1*a（冷却速率）时基本可以抹除冷却优先和爆发优的差距，即两者各级对应射速相近
-                当k增大时，差距射击频率差距主要体现在低等级（爆发高，冷却低），等级越高影响越小。爆发模式下各等级射频更加均匀且持续时间更长，
-                冷却模式正好相反，低等级射频低，高等级射频高且持续时间短，可灵活选择m+k*a*/
-        SHOOT.ShootTime = (m + 2 * a) * 10;
-        SHOOT.ShootTime = SHOOT.ShootTime<0?0:SHOOT.ShootTime;
-        // SHOOT.ShootTime = SHOOT.ShootTime>600?600:SHOOT.ShootTime;
-        //分级射速
-        if(m < 100){
-            SHOOT.shoot_time++;
-            SHOOT.shoot_speed = (10 * m - a - 3 * d) / (d * (SHOOT.ShootTime/100.0f)) + a / d;
-        }
-        else{
-            SHOOT.shoot_time++;
-            SHOOT.shoot_speed = (10 * m - a - 5 * d) / (d * (SHOOT.ShootTime/100.0f)) + a / d;
-        }
+    if(m > 100)
+    {
+      SHOOT.shoot_speed = 20.0f;
+      target_speed = SHOOT.shoot_speed * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
     }
-    else if(0 < SHOOT.shoot_time && SHOOT.shoot_time < SHOOT.ShootTime){
-        target_speed = SHOOT.shoot_speed * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
-        target_speed = target_speed>350.0f?350.0f:target_speed;
-        target_speed = target_speed<0.0f?0.0f:target_speed;
+    else if (m > 50 && m <= 100)
+    {
+      if(SHOOT.shoot_time == 0){
+          /*方案二：根据热量上限和冷却决定射击策略，计算得当射击时间为m（热量上限）+1*a（冷却速率）时基本可以抹除冷却优先和爆发优的差距，即两者各级对应射速相近
+                  当k增大时，差距射击频率差距主要体现在低等级（爆发高，冷却低），等级越高影响越小。爆发模式下各等级射频更加均匀且持续时间更长，
+                  冷却模式正好相反，低等级射频低，高等级射频高且持续时间短，可灵活选择m+k*a*/
+          SHOOT.ShootTime = (m + 2 * a) * 10;
+          SHOOT.ShootTime = SHOOT.ShootTime<0?0:SHOOT.ShootTime;
+          // SHOOT.ShootTime = SHOOT.ShootTime>600?600:SHOOT.ShootTime;
+          //分级射速
+          if(m < 100){
+              SHOOT.shoot_time++;
+              SHOOT.shoot_speed = (10 * m - a - 3 * d) / (d * (SHOOT.ShootTime/100.0f)) + a / d;
+          }
+          else{
+              SHOOT.shoot_time++;
+              SHOOT.shoot_speed = (10 * m - a - 5 * d) / (d * (SHOOT.ShootTime/100.0f)) + a / d;
+          }
+      }
+      else if(0 < SHOOT.shoot_time && SHOOT.shoot_time < SHOOT.ShootTime){
+          target_speed = SHOOT.shoot_speed * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
+          target_speed = target_speed>350.0f?350.0f:target_speed;
+          target_speed = target_speed<0.0f?0.0f:target_speed;
+      }
+      else{
+          target_speed = (a / d) * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
+          target_speed = target_speed>350.0f?350.0f:target_speed;
+          target_speed = target_speed<0.0f?0.0f:target_speed;
+      }
+      if(SHOOT.shoot_time < SHOOT.ShootTime){
+          SHOOT.shoot_time++;
+      }
     }
-    else{
-        target_speed = (a / d) * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
-        target_speed = target_speed>350.0f?350.0f:target_speed;
-        target_speed = target_speed<0.0f?0.0f:target_speed;
-    }
-    if(SHOOT.shoot_time < SHOOT.ShootTime){
-        SHOOT.shoot_time++;
+    else
+    {
+      target_speed = (a / d) * 2 * PI / BULLET_NUM / TRIGGER_REDUCTION_RATIO*19;
+      target_speed = target_speed<0.0f?0.0f:target_speed;
     }
 }
 /*-------------------- Reference --------------------*/

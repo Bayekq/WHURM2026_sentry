@@ -25,6 +25,7 @@ typedef enum
     SUPPLY_PROJECTILE_ACTION_CMD_ID   = 0x0102,
     SUPPLY_PROJECTILE_BOOKING_CMD_ID  = 0x0103,
     REFEREE_WARNING_CMD_ID            = 0x0104,
+    SENTRY_CMD_ID                     = 0x0120, 
     ROBOT_STATE_CMD_ID                = 0x0201,
     POWER_HEAT_DATA_CMD_ID            = 0x0202,
     ROBOT_POS_CMD_ID                  = 0x0203,
@@ -32,12 +33,13 @@ typedef enum
     AERIAL_ROBOT_ENERGY_CMD_ID        = 0x0205,
     ROBOT_HURT_CMD_ID                 = 0x0206,
     SHOOT_DATA_CMD_ID                 = 0x0207,
-    BULLET_REMAINING_CMD_ID           = 0x0208,
+    PROJECTILE_ALLOWANCE_CMD_ID       = 0x0208,
     RFID_STATUS_ID                    = 0x0209,
     GOUND_ROBOT_POS_ID                = 0x020B,
     SENTRY_DECISION_INFO_ID           = 0x020D,
     STUDENT_INTERACTIVE_DATA_CMD_ID   = 0x0301,
     CUSTOM_CONTROLLER_CMD_ID          = 0x0302, //自定义控制器数据
+    MAP_COMMAND_CMD_ID                = 0x0303, //地图命令数据
 	  ROBOT_COMMAND_CMD_ID              = 0x0304,
     IDCustomData,
 }referee_cmd_id_t;

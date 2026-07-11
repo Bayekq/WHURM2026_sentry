@@ -219,6 +219,8 @@ void GimbalInit(void)
    gimbal.feedback_vel.pitch=0;
    gimbal.feedback_vel.yaw=0;
 
+   gimbal.delta_yaw=0;
+
    gimbal.scan_dir_yaw=1;
 
    //step3 SMC数据清零，设置SMC参数
@@ -268,7 +270,7 @@ void GimbalSetMode(void)
     }
     // gimbal.mode=GIMBAL_DBUS_ERR;
     //初次开启上档或第一次丢失目标时间超出阈值则进入GAP模式
-    if(gimbal.scan && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN)
+    if(gimbal.scan && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN && gimbal.mode != GIMBAL_SCAN_2)
     {
       gimbal.mode=GIMBAL_GAP;
       return;
@@ -278,6 +280,7 @@ void GimbalSetMode(void)
     if(gimbal.scan)
     {  
     gimbal.mode=GIMBAL_SCAN;
+    // gimbal.mode=GIMBAL_SCAN_2;
     }
     // 进入自瞄，此时big_yaw固定
     else
@@ -325,7 +328,7 @@ void GimbalSetMode(void)
       return;
     }
     //初次开启上档或第一次丢失目标时间超出阈值则进入GAP模式
-    if(gimbal.scan && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN)
+    if(gimbal.scan && gimbal.last_mode != GIMBAL_GAP && gimbal.mode != GIMBAL_SCAN && gimbal.mode != GIMBAL_SCAN_2)
     {
       gimbal.mode=GIMBAL_GAP;
       return;
@@ -335,6 +338,7 @@ void GimbalSetMode(void)
     if(gimbal.scan)
     {  
     gimbal.mode=GIMBAL_SCAN;
+    // gimbal.mode=GIMBAL_SCAN_2;
     }
     // 进入自瞄，此时big_yaw固定
     else
@@ -366,6 +370,8 @@ void GimbalObserver(void)
 
   gimbal.feedback_vel.pitch=GetImuVelocity(AX_PITCH);
   gimbal.feedback_vel.yaw=GetImuVelocity(AX_YAW);
+
+  gimbal.delta_yaw=GetGimbalDeltaYawMid();
 
   //云台偏移状态判断
   gimbal.offset_status=Gimbal_is_in_limit();
@@ -458,10 +464,10 @@ void GimbalReference(void)
       switch (gimbal.offset_status)
       {
       case 1:
-        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw-0.001f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
+        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw-0.01f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
         break;
       case 2:
-        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw+0.001f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
+        gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw+0.01f, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
         break;
       default:
         break;
@@ -491,6 +497,20 @@ void GimbalReference(void)
         break;
       }
       gimbal.reference.yaw = ContinuousAngle(gimbal.reference.yaw+gimbal.scan_dir_yaw*GIMBAL_SCAN_STEP, &gimbal.reference.yaw_last, &gimbal.reference.yaw_round_count);
+      gimbal.reference.pitch = fp32_constrain(GenerateSinWave(GIMBAL_SCAN_PITCH_AMPLITUDE, 0, GIMBAL_SCAN_PITCH_PERIOD),gimbal.lower_limit.pitch,gimbal.upper_limit.pitch);
+    }
+  }
+
+  else if (gimbal.mode == GIMBAL_SCAN_2)
+  {
+    if(gimbal.last_mode != GIMBAL_SCAN_2)
+    {
+      gimbal.reference.pitch=gimbal.feedback_total_pos.pitch;
+      gimbal.reference.yaw=gimbal.feedback_total_pos.yaw;
+    }
+    else
+    {
+      gimbal.reference.yaw = gimbal.feedback_total_pos.yaw;
       gimbal.reference.pitch = fp32_constrain(GenerateSinWave(GIMBAL_SCAN_PITCH_AMPLITUDE, 0, GIMBAL_SCAN_PITCH_PERIOD),gimbal.lower_limit.pitch,gimbal.upper_limit.pitch);
     }
   }
@@ -532,6 +552,14 @@ void GimbalConsole(void)
   else if (gimbal.mode == GIMBAL_IMU || gimbal.mode== GIMBAL_GAP || gimbal.mode == GIMBAL_AUTO_AIM || gimbal.mode == GIMBAL_SCAN)
   {
     SMC_posErrorUpdate(&gimbal_smc.yaw, gimbal.reference.yaw, gimbal.feedback_total_pos.yaw, gimbal.feedback_vel.yaw, GIMBAL_SAMPLE_TIME);
+    gimbal.yaw.set.curr = gimbal.yaw.direction * SMC_calc(&gimbal_smc.yaw);
+
+    SMC_posErrorUpdate(&gimbal_smc.pitch, gimbal.reference.pitch, gimbal.feedback_total_pos.pitch, gimbal.feedback_vel.pitch, GIMBAL_SAMPLE_TIME);
+    gimbal.pitch.set.curr = gimbal.pitch.direction * SMC_calc(&gimbal_smc.pitch);
+  }
+  else if (gimbal.mode == GIMBAL_SCAN_2)
+  {
+    SMC_posErrorUpdate(&gimbal_smc.yaw, 0.0f, gimbal.delta_yaw, gimbal.feedback_vel.yaw, GIMBAL_SAMPLE_TIME);
     gimbal.yaw.set.curr = gimbal.yaw.direction * SMC_calc(&gimbal_smc.yaw);
 
     SMC_posErrorUpdate(&gimbal_smc.pitch, gimbal.reference.pitch, gimbal.feedback_total_pos.pitch, gimbal.feedback_vel.pitch, GIMBAL_SAMPLE_TIME);

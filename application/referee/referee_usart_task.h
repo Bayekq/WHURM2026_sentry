@@ -21,6 +21,14 @@
 #define USART_RX_BUF_LENGHT     512
 #define REFEREE_FIFO_BUF_LENGTH 1024
 
+typedef __packed struct
+{
+    uint8_t sof;  // 数据帧起始字节，固定值为 0x5A
+    uint16_t len;  // 数据段长度
+    uint8_t id;   // 数据段id
+    uint8_t crc;  // 数据帧头的 CRC8 校验
+} SendFrameHeader_t;
+
 /**
   * @brief          referee task
   * @param[in]      pvParameters: NULL

@@ -39,6 +39,7 @@ extern float GetUartGimbalYawMotorPos(void);
 extern bool GetUartGimbalInitJudge(void);
 extern uint32_t GetUartTimeStampForTest(void);
 extern bool GetUartAutoAimJudgeReturn(void);
+extern uint8_t GetUartSentryMode(void);
 
 #endif  // __COMMUNICATION_H
 /*------------------------------ End of File ------------------------------*/

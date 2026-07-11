@@ -46,15 +46,18 @@ buff_t buff_musk_t;
 air_support_data_t robot_energy_t;
 hurt_data_t robot_hurt_t;
 shoot_data_t shoot_data;
-ext_bullet_remaining_t bullet_remaining_t;
+projectile_allowance_t projectile_allowance;
 robot_interaction_data_t student_interactive_data_t;
 CustomControllerData_t CUSTOM_CONTROLLER_DATA;  //自定义控制器数据
+MapCommandData_t MAP_COMMAND_DATA;  //地图命令数据
+
 
 rfid_status_t RFID_STATUS;
 ground_robot_position_t ground_robot_pos_t;
 sentry_info_t sentry_decision_info_t;
 
 ext_robot_command_t robot_command_t;
+
 
 void init_referee_struct_data(void)
 {
@@ -77,11 +80,11 @@ void init_referee_struct_data(void)
     memset(&robot_energy_t, 0, sizeof(air_support_data_t));
     memset(&robot_hurt_t, 0, sizeof(hurt_data_t));
     memset(&shoot_data, 0, sizeof(shoot_data_t));
-    memset(&bullet_remaining_t, 0, sizeof(ext_bullet_remaining_t));
+    memset(&projectile_allowance, 0, sizeof(projectile_allowance_t));
 
     memset(&student_interactive_data_t, 0, sizeof(robot_interaction_data_t));
     memset(&CUSTOM_CONTROLLER_DATA, 0, sizeof(CustomControllerData_t));
-
+    memset(&MAP_COMMAND_DATA, 0, sizeof(MapCommandData_t));
     memset(&robot_command_t, 0, sizeof(ext_robot_command_t));
 }
 
@@ -165,8 +168,8 @@ void referee_data_solve(uint8_t * frame)
             memcpy(&shoot_data, frame + index, sizeof(shoot_data_t));
             referee_online_time = HAL_GetTick();
         } break;
-        case BULLET_REMAINING_CMD_ID: {
-            memcpy(&bullet_remaining_t, frame + index, sizeof(ext_bullet_remaining_t));
+        case PROJECTILE_ALLOWANCE_CMD_ID: {
+            memcpy(&projectile_allowance, frame + index, sizeof(projectile_allowance_t));
             referee_online_time = HAL_GetTick();
         } break;
         case STUDENT_INTERACTIVE_DATA_CMD_ID: {
@@ -175,6 +178,10 @@ void referee_data_solve(uint8_t * frame)
         } break;
         case CUSTOM_CONTROLLER_CMD_ID: {
             memcpy(&CUSTOM_CONTROLLER_DATA, frame + index, sizeof(CustomControllerData_t));
+            referee_online_time = HAL_GetTick();
+        } break;
+        case MAP_COMMAND_CMD_ID: {
+            memcpy(&MAP_COMMAND_DATA, frame + index, sizeof(MapCommandData_t));
             referee_online_time = HAL_GetTick();
         } break;
         case ROBOT_COMMAND_CMD_ID: {
@@ -262,21 +269,21 @@ uint8_t get_team_color(void)  // 谨防“哨兵在打我”
     }
 }
 
-// uint16_t get_shoot_heat(void)  // 双枪管哨兵
-// {
-//     if (power_heat_data.shooter_17mm_1_barrel_heat > power_heat_data.shooter_17mm_2_barrel_heat) {
-//         return power_heat_data.shooter_17mm_1_barrel_heat;
-//     } else {
-//         return power_heat_data.shooter_17mm_2_barrel_heat;
-//     }
-// }
-
 CustomControllerData_t * GetCustomControllerDataPoint(void) { return &CUSTOM_CONTROLLER_DATA; }
 
-void GetSentryInfo(uint32_t sentry_info, uint8_t sentry_info_2)
+void GetMapCommandData(float * x, float * y, uint8_t * cmd_keyboard, uint8_t * target_robot_id, uint16_t * cmd_source)
 {
-    sentry_info = sentry_decision_info_t.sentry_info;
-    sentry_info_2 = sentry_decision_info_t.sentry_info_2;
+    *x = MAP_COMMAND_DATA.target_position_x;
+    *y = MAP_COMMAND_DATA.target_position_y;
+    *cmd_keyboard = MAP_COMMAND_DATA.cmd_keyboard;
+    *target_robot_id = MAP_COMMAND_DATA.target_robot_id;
+    *cmd_source = MAP_COMMAND_DATA.cmd_source;
+}
+
+void GetSentryInfo(uint32_t * sentry_info, uint16_t * sentry_info_2)
+{
+    *sentry_info = sentry_decision_info_t.sentry_info;
+    *sentry_info_2 = sentry_decision_info_t.sentry_info_2;
 }
 
 uint16_t get_current_HP(void)

@@ -238,6 +238,13 @@ void ChassisConsole(void)
         chassis.wheel[i].set.curr = PID_calc(&chassis_pid.wheel_velocity[i], chassis.feedback[i], chassis.set[i]);
     }
 
+    if(chassis.mode == CHASSIS_LOCK)
+    {
+        for(int j=0; j<4; ++j){
+            chassis.wheel[j].set.curr = 0;
+        }
+    }
+
     ChassisPowerControl(&chassis);
 }
 

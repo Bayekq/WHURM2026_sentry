@@ -36,6 +36,7 @@ typedef struct {
 
   float heat;
   float buffer;
+  uint8_t sentry_mode;
 } PowerControl_s;
 
 /**

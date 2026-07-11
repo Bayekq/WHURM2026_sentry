@@ -27,6 +27,8 @@ float POWER_LIMIT=45.0f;
 #define POWER_TOTAL_CURRENT_LIMIT       20000.0f
 #if (CHASSIS_TYPE == CHASSIS_OMNI_WHEEL)
 
+
+
 PowerControl_s chassis_power_control;
 
 float power_calculate(float K_0, float K_1, float K_2, float A, float Current,
@@ -85,7 +87,20 @@ void ChassisPowerControl(Chassis_s *chassis)
   chassis_power_control.heat = GetUartHeat();
   chassis_power_control.buffer = GetUartBuffer();
 
-  chassis_power_control.available_power = POWER_LIMIT;
+  chassis_power_control.sentry_mode = GetUartSentryMode();
+
+  if(chassis_power_control.sentry_mode == 1 || chassis_power_control.sentry_mode == 2) // 进攻姿态&防御姿态
+  {
+    chassis_power_control.available_power = POWER_LIMIT*0.40f;
+  }
+  else if(chassis_power_control.sentry_mode == 3) // 移动姿态
+  {
+    chassis_power_control.available_power = POWER_LIMIT*1.2f;
+  }
+  else
+  {
+    chassis_power_control.available_power = POWER_LIMIT;
+  }
   chassis_power_control.consume_power = 0.0f;
 
   for(int i=0; i<4; i++)

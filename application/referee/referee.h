@@ -103,6 +103,12 @@ typedef __packed struct  //0x105
     uint8_t dart_remaining_time;
     uint16_t dart_info;
 } dart_info_t;
+
+typedef __packed struct  //0x0120
+{
+    uint32_t sentry_cmd;
+} sentry_cmd_t;
+
 typedef __packed struct  //0x0201
 {
     uint8_t robot_id;                       //本机器人 ID
@@ -170,6 +176,7 @@ typedef __packed struct  //0x0208
     uint16_t projectile_allowance_17mm;  //17mm 弹丸允许发弹量
     uint16_t projectile_allowance_42mm;  //42mm 弹丸允许发弹量
     uint16_t remaining_gold_coin;        //剩余金币数量
+    uint16_t projectile_allowance_fortress;
 } projectile_allowance_t;
 typedef __packed struct  //0x0209
 {
@@ -212,7 +219,7 @@ typedef __packed struct  //0x020C
 typedef __packed struct  //0x020D
 {
     uint32_t sentry_info;
-    uint8_t sentry_info_2;
+    uint16_t sentry_info_2;
 } sentry_info_t;
 typedef __packed struct  //0x020E
 {
@@ -233,6 +240,15 @@ typedef __packed struct __CustomControllerData  //0x0302
 {
     uint8_t data[30];
 } CustomControllerData_t;
+
+typedef __packed struct __MapCommandData  //0x0303
+{
+    float target_position_x;
+    float target_position_y;
+    uint8_t cmd_keyboard;
+    uint8_t target_robot_id;
+    uint16_t cmd_source;
+} MapCommandData_t;
 
 typedef __packed struct
 {
@@ -263,15 +279,12 @@ typedef __packed struct
     uint16_t reserved;
 } ext_robot_command_t;
 
-typedef __packed struct 
-{
-    uint32_t sentry_cmd; 
-} sentry_cmd_t;
-
 extern game_robot_HP_t game_robot_HP;
 extern robot_status_t robot_status;
+extern projectile_allowance_t projectile_allowance;
 extern game_status_t game_status;
 extern rfid_status_t RFID_STATUS;
+extern shoot_data_t shoot_data;
 extern void init_referee_struct_data(void);
 extern void referee_data_solve(uint8_t * frame);
 
@@ -287,7 +300,9 @@ extern void get_shoot_heat42_limit_and_heat42(uint16_t *heat_limit, uint16_t *he
 
 extern CustomControllerData_t * GetCustomControllerDataPoint(void);
 
-extern void GetSentryInfo(uint32_t sentry_info, uint8_t sentry_info_2);
+extern void GetMapCommandData(float * x, float * y, uint8_t * cmd_keyboard, uint8_t * target_robot_id, uint16_t * cmd_source);
+
+extern void GetSentryInfo(uint32_t * sentry_info, uint16_t * sentry_info_2);
 
 /*========== API ==========*/
 

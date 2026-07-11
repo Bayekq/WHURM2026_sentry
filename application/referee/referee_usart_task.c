@@ -26,6 +26,7 @@
 #include "protocol.h"
 #include "referee.h"
 
+#include "usb_task.h"
 
 
 
@@ -51,7 +52,22 @@ fifo_s_t referee_fifo;
 uint8_t referee_fifo_buf[REFEREE_FIFO_BUF_LENGTH];
 unpack_data_t referee_unpack_obj;
 
-uint32_t sentry_cmd;
+typedef __packed struct
+{
+  uint16_t data_cmd_id, data_sub_id;
+  uint16_t sender_id;
+  uint16_t receiver_id;
+  uint32_t sentry_cmd;
+} sentry_data_t;
+
+typedef __packed struct
+{
+    SendFrameHeader_t frame_header;
+    sentry_data_t data;
+    uint16_t crc;
+} SendDataSentryCmd_s;
+
+SendDataSentryCmd_s send_data_sentry_cmd;
 
 /**
   * @brief          referee task
@@ -69,9 +85,27 @@ void referee_usart_task(void const * argument)
     fifo_s_init(&referee_fifo, referee_fifo_buf, REFEREE_FIFO_BUF_LENGTH);
     usart6_init(usart6_buf[0], usart6_buf[1], USART_RX_BUF_LENGHT);
 
+    send_data_sentry_cmd.frame_header.sof = 0xA5;
+    send_data_sentry_cmd.frame_header.len = 10;
+    send_data_sentry_cmd.frame_header.id = 0x00;
+    send_data_sentry_cmd.data.data_cmd_id = 0x0301;
+    send_data_sentry_cmd.data.data_sub_id = 0x0120;
+    send_data_sentry_cmd.data.sender_id = (uint16_t)get_robot_id();
+    send_data_sentry_cmd.data.receiver_id = 0x8080;
+
     while(1)
     {
-        sentryCmdSend(sentry_cmd);
+      
+        send_data_sentry_cmd.frame_header.id = send_data_sentry_cmd.frame_header.id + 1;  // 每次发送数据帧时，帧ID递增
+        send_data_sentry_cmd.data.sender_id = (uint16_t)get_robot_id();
+        send_data_sentry_cmd.data.sentry_cmd = SENTRY_CMD_DATA;
+        append_CRC8_check_sum((unsigned char *)&send_data_sentry_cmd.frame_header, sizeof(SendFrameHeader_t));
+        append_CRC16_check_sum((uint8_t *)&send_data_sentry_cmd, sizeof(SendDataSentryCmd_s));
+        
+        HAL_UART_Transmit(&huart6, (uint8_t *)&send_data_sentry_cmd, sizeof(SendDataSentryCmd_s),100);
+        while(__HAL_UART_GET_FLAG(&huart6, UART_FLAG_TXE) == RESET);
+        
+
         referee_unpack_fifo_data();
         osDelay(10);
     }
@@ -229,10 +263,3 @@ void UI_SendByte(unsigned char ch)
 		}
 }
 
-void sentryCmdSend(uint32_t sentry_cmd)
-{
-    HAL_StatusTypeDef state=HAL_UART_Transmit(&huart6, (uint8_t *)(&sentry_cmd), sizeof(uint32_t),50);
-    if(state==HAL_OK){
-				//提示发送成功
-		}
-}

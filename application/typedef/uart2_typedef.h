@@ -143,6 +143,7 @@ typedef struct
             float vy;
             float wz;
         } __packed__ speed_vector;
+        uint8_t mode; // 哨兵模式：0-未知，1-进攻姿态，2-防御姿态，3-移动姿态
     } __attribute__((packed)) data;
 
     uint16_t crc16;  //crc16校验

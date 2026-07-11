@@ -208,6 +208,10 @@ void DataAimyawRenew()
     Send_Data_Aimyaw.data.speed_vector.wz = GetScCmdChassisSpeed(AX_Z);
     Send_Data_Aimyaw.data.power = get_chassis_power();
     Send_Data_Aimyaw.data.buffer = get_buffer();
+    uint32_t info=0;
+    uint16_t info2=0;
+    GetSentryInfo(&info, &info2);
+    Send_Data_Aimyaw.data.mode = (info2 >> 12) & 0x03;
     append_CRC16_check_sum((uint8_t *)(&Send_Data_Aimyaw), sizeof(Data_Aimyaw_s));
 }
 
@@ -424,6 +428,12 @@ bool GetUartAutoAimJudgeReturn(void)
     }
     return Receive_Data_Aimyaw.data.auto_aim_judge;
 }
+
+uint8_t GetUartSentryMode(void)
+{
+    return Receive_Data_Aimyaw.data.mode;
+}
+
 
 #if __SELF_BOARD_ID == C_BOARD_OMNI_SENTRY_ROT_GIMBAL
 inline float GetScCmdChassisSpeed(uint8_t axis)

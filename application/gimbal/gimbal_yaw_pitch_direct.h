@@ -64,6 +64,7 @@ typedef enum {
     GIMBAL_DBUS_ERR,    //遥控器断联相关处理任务
     GIMBAL_GAP,         //跳入IMU/AUTO_AIM模式之前的存储数据模式
     GIMBAL_SCAN,        // 扫描模式
+    GIMBAL_SCAN_2,
     GIMBAL_AUTO_AIM,    //自瞄模式
 } GimbalMode_e;
 
@@ -115,6 +116,7 @@ typedef struct
     Values_t feedback_pos,feedback_pos_gap,feedback_total_pos,feedback_vel;     // 状态值(目前专供给IMU数据)
     Values_t upper_limit;  // 上限值
     Values_t lower_limit;  // 下限值
+    float delta_yaw;
 
     uint32_t init_start_time,init_timer;
     
@@ -125,6 +127,7 @@ typedef struct
     
     bool init_continue; //是否继续进行校准模式
     uint8_t offset_status; //云台偏移状态
+
 } Gimbal_s;
 
 

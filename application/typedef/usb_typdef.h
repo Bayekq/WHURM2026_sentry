@@ -27,6 +27,8 @@
 #define JOINT_STATE_SEND_ID       ((uint8_t)0x0C)
 #define BUFF_SEND_ID              ((uint8_t)0x0D)
 #define SENTRYINFO_SEND_ID        ((uint8_t)0x0E)
+#define MAP_COMMAND_SEND_ID       ((uint8_t)0x0F)
+#define INIT_SPEED_SEND_ID        ((uint8_t)0x10)
 
 #define ROBOT_CMD_DATA_RECEIVE_ID  ((uint8_t)0x01)
 #define PID_DEBUG_DATA_RECEIVE_ID  ((uint8_t)0x02)
@@ -349,6 +351,32 @@ typedef struct
 
     uint16_t crc;
 } __packed__ SendDataSentryInfo_s;
+
+typedef struct 
+{
+    FrameHeader_t frame_header;  // 数据段id = 0x0F
+    uint32_t time_stamp;
+    struct
+    {
+        float target_position_x;
+        float target_position_y;
+        uint8_t cmd_keyboard;
+        uint8_t target_robot_id;
+        uint16_t cmd_source;
+    } __packed__ data;
+    uint16_t crc;
+} __packed__ SendDataMapCmd_s;
+
+typedef struct
+{
+    FrameHeader_t frame_header;  // 数据段id = 0x10
+    uint32_t time_stamp;
+    struct
+    {
+        float initial_speed;
+    } __packed__ data;
+    uint16_t crc;
+} __packed__ SendInitSpeed_s;
 
 /*-------------------- Receive --------------------*/
 typedef struct RobotCmdData
